@@ -23,6 +23,8 @@ All the different services will be deployed to our local k8s with limited resour
 
 If they are deployed successfully some basic api tests will be executed and afterwards load test will be executed to the rest api.
 
+To provide an kubernetes this repo uses the kubernetes playground project
+link:https://github.com/pipiobjo/k8s-playground[]
 
 == Add a new service / programming language
 
@@ -36,6 +38,18 @@ If they are deployed successfully some basic api tests will be executed and afte
 *** This file is used to update the docker image version and is then copied to kustomization.yaml
 *** The kustomization.yaml file is deleted after build to keep the git repo clean
 *** Please use myapp as image name in your kustomize deployment resource this will automatically be replaced with the real image name
+* Add starting load test script for your service
+** Use java-pure-load-tests.sh as sample
+** load test reports should be placed in load-test-reports
+* if everything is working please create an PR for the repo
+
+== Load Test
+
+The provided load test scripts using k6s https://k6.io/docs/
+
+
+
+
 
 
 == REST API

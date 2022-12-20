@@ -1,0 +1,128 @@
+= Compare Languages
+:autofit-option:
+:caution-caption: ☠
+:important-caption: ❗
+:note-caption: 🛈
+:tip-caption: 💡
+:warning-caption: ⚠
+:source-highlighter: coderay
+:toc:
+ifdef::env-github[]
+    rendered by GitHub Asciidoctor {asciidoctor-version}.
+endif::[]
+ifndef::env-github[]
+    rendered by Asciidoctor {asciidoctor-version}
+endif::[]
+
+== Introduction
+
+This repo should provide an easy way to check different programming languages for their performance.
+To make this comparable all of them have to implement the same rest api. Description see below.
+
+All the different services will be deployed to our local k8s with limited resources.
+
+If they are deployed successfully some basic api tests will be executed and afterwards load test will be executed to the rest api.
+
+
+== Add a new service / programming language
+
+* Create a new folder for your service
+** Follow the pattern [language]-[framework]-[additional-identifiers]
+*** For example java-pure-tomcat or java-springboot-jetty
+* Place your build script in the build-scripts folder
+** Use java-pure-build-deploy.sh as template
+* K8s manifests are generated via kustomize
+** The scripts expecting a k8s folder with a kustomization.tpl.yaml
+*** This file is used to update the docker image version and is then copied to kustomization.yaml
+*** The kustomization.yaml file is deleted after build to keep the git repo clean
+*** Please use myapp as image name in your kustomize deployment resource this will automatically be replaced with the real image name
+
+
+== REST API
+
+.User List
+[source, bash]
+----
+curl -s localhost:8080/api/user | jq
+[]
+----
+
+.Create User
+[source, bash]
+----
+curl -s --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"login":"xyz","password":"xyz","firstname":"john", "lastname":"smith"}' \
+  http://localhost:8080/api/user | jq
+{
+  "id": "12395c7b-d545-4fb8-90ea-bd37e73310b7"
+}
+----
+
+.Creating the same login twice results in HTTP/1.1 400 Bad Request
+[source, bash]
+----
+curl -v --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"login":"xyz","password":"xyz", "firstname":"john", "lastname":"smith"}' \
+  http://localhost:8080/api/user | jq
+
+< HTTP/1.1 400 Bad Request
+< Date: Wed, 02 Nov 2022 23:06:26 GMT
+< Transfer-encoding: chunked
+< Content-type: application/json
+
+"user already exists"
+
+
+----
+
+.Creating a second user
+[source, bash]
+----
+curl -v --header "Content-Type: application/json" \
+--request POST \
+--data '{"login":"abc","password":"abc","firstname":"john", "lastname":"do"}' \
+http://localhost:8080/api/user | jq
+----
+
+.User List, reduced properties are listed, without internal id and password
+[source, bash]
+----
+curl -s http://localhost:8080/api/user | jq
+[
+  {
+    "login": "abc",
+    "firstName": "john",
+    "lastName": "do"
+  },
+  {
+    "login": "xyz",
+    "firstName": "john",
+    "lastName": "smith"
+  }
+]
+
+----
+
+.User List, search api for "login" / "firstname" and "lastname"
+[source, bash]
+----
+curl -s http://localhost:8080/api/user\?login\=abc | jq
+[
+  {
+    "login": "abc",
+    "firstName": "john",
+    "lastName": "do"
+  }
+]
+----
+
+.Get the greeting message via basic auth
+[source, bash]
+----
+curl -s http://abc:abc@localhost:8080/api/greeting | jq
+{
+"msg": "Hello john do!"
+}
+----

@@ -1,0 +1,9 @@
+golang 1.19
+kubectl 1.26.0
+helm 3.8.2
+kustomize 4.5.7
+k9s 0.26.3
+octant 0.25.1
+dive 0.10.0
+k6 0.41.0
+nodejs 19.2.0

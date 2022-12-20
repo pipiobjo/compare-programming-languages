@@ -1,0 +1,11 @@
+Static libraries:
+   ../../../../../../../../../../.asdf/installs/graalvm/22.3.0-java17/lib/svm/clibraries/linux-amd64/liblibchelper.a
+   ../../../../../../../../../../.asdf/installs/graalvm/22.3.0-java17/lib/static/linux-amd64/glibc/libnet.a
+   ../../../../../../../../../../.asdf/installs/graalvm/22.3.0-java17/lib/static/linux-amd64/glibc/libextnet.a
+   ../../../../../../../../../../.asdf/installs/graalvm/22.3.0-java17/lib/static/linux-amd64/glibc/libnio.a
+   ../../../../../../../../../../.asdf/installs/graalvm/22.3.0-java17/lib/static/linux-amd64/glibc/libmanagement_ext.a
+   ../../../../../../../../../../.asdf/installs/graalvm/22.3.0-java17/lib/static/linux-amd64/glibc/libjava.a
+   ../../../../../../../../../../.asdf/installs/graalvm/22.3.0-java17/lib/static/linux-amd64/glibc/libfdlibm.a
+   ../../../../../../../../../../.asdf/installs/graalvm/22.3.0-java17/lib/static/linux-amd64/glibc/libzip.a
+   ../../../../../../../../../../.asdf/installs/graalvm/22.3.0-java17/lib/svm/clibraries/linux-amd64/libjvm.a
+Other libraries: z,pthread,dl,rt

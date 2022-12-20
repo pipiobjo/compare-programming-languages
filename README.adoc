@@ -137,6 +137,8 @@ curl -s http://localhost:8080/api/user\?login\=abc | jq
 ----
 curl -s http://abc:abc@localhost:8080/api/greeting | jq
 {
-"msg": "Hello john do!"
+  "msg": "Hello john do!",
+  "firstname": "john",
+  "lastname": "do"
 }
 ----

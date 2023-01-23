@@ -1,0 +1,7 @@
+java adoptopenjdk-18.0.1+10
+kubectl 1.25.2
+kustomize 4.5.4
+k9s 0.25.18
+octant 0.25.1
+tilt 0.30.5
+dive 0.10.0

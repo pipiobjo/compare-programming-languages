@@ -1,1 +1,14 @@
-{"java-pure":{"container-image-size":"./results/java-pure/container-image-size.json","loadtest-results":"./results/java-pure/loadtest-results.json","perf-cpu":"./results/java-pure/perf-cpu.json","perf-mem":"./results/java-pure/perf-mem.json"}}
+{
+  "java-pure-apko": {
+    "container-image-size": "reports/java-pure-apko/container-image-size.json",
+    "loadtest-results": "reports/java-pure-apko/loadtest-results.json",
+    "perf-cpu": "reports/java-pure-apko/perf-cpu.json",
+    "perf-mem": "reports/java-pure-apko/perf-mem.json"
+  },
+  "java-pure": {
+    "container-image-size": "reports/java-pure/container-image-size.json",
+    "loadtest-results": "reports/java-pure/loadtest-results.json",
+    "perf-cpu": "reports/java-pure/perf-cpu.json",
+    "perf-mem": "reports/java-pure/perf-mem.json"
+  }
+}

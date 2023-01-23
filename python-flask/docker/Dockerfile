@@ -12,8 +12,7 @@ RUN pip install -r app/requirements.txt
 
 RUN apk add --no-cache bash
 RUN apk --no-cache add curl
+RUN chmod +x app/boot.sh
 
 # configure the container to run in an executed manner
-ENTRYPOINT [ "python" ]
-
-CMD ["app/app.py"]
+ENTRYPOINT [ "app/boot.sh" ]

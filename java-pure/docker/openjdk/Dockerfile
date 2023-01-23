@@ -26,21 +26,13 @@ RUN MODULES="$(jdeps --list-deps --ignore-missing-deps /home/app/target/java-pur
 
 
 
-
 FROM bitnami/minideb:bullseye
-#FROM bellsoft/liberica-openjdk-alpine
-#FROM alpine:latest
+#FROM my-java-base:latest
+#FROM cgr.dev/chainguard/glibc-dynamic:latest
+#FROM cgr.dev/chainguard/gcc-glibc:latest
+#FROM cgr.dev/chainguard/gcc-musl:latest
 
 
-#RUN  apk update \
-#  && apk upgrade \
-#  && apk add ca-certificates \
-#  && update-ca-certificates \
-#  && apk add --update coreutils && rm -rf /var/cache/apk/*   \
-#  && apk add --update tzdata curl unzip bash \
-#  && apk add --no-cache nss \
-#  && rm -rf /var/cache/apk/*
-#
 
 
 #RUN apk update && apk upgrade && apk add --no-cache java-cacerts bash
@@ -51,7 +43,6 @@ ENV PATH="$PATH:$JAVA_HOME/bin"
 
 # Copy the JRE created in the last step into our $JAVA_HOME
 COPY --from=builder  /home/app/target/java-pure*jar-with-dependencies.jar /app.jar
-
 
 ENTRYPOINT ["/opt/jre-minimal/bin/java","-jar","/app.jar"]
 #ENTRYPOINT ["java","--version"]

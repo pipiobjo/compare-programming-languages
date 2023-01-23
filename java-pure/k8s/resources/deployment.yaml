@@ -11,13 +11,15 @@ spec:
       app: java-pure
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
       labels:
         app: java-pure
 
     spec:
       containers:
         - name: java-pure
-          image: myapp
+          image: java-pure
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

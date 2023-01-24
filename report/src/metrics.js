@@ -100,10 +100,27 @@ function unifyValues(values){
 
 }
 
+
+function unifyValuesMemory(values){
+    // console.log("values", values);
+    const result = [];
+    var min = Math.min(...values.map(item => item[0]));
+    // console.log("min:", min);
+    values.map(item => {
+        result.push({
+            x: item[0] - min,
+            y: formatBytes(item[1]),
+        })
+    });
+    return result;
+
+
+}
+
 function prepareMemData(prefix, perfData){
     // console.log("mem-perfData", perfData)
     const values = perfData.data.result[0].values;
-    let unifiedVal = unifyValues(values);
+    let unifiedVal = unifyValuesMemory(values);
     // console.log("unified values", unifiedVal);
 
     if(!memDataSet.labels){
@@ -363,7 +380,7 @@ async function prepareChartData(){
                     y: {
                         title: {
                             display: true,
-                            text: 'Memory Usage',
+                            text: 'Memory Usage in MB',
                         },
                     }
                 },

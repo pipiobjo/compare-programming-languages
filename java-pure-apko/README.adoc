@@ -1,0 +1,67 @@
+= REST API in pure Java without any frameworks
+
+== Libs
+Lombok https://projectlombok.org/
+Logback tutorial: https://stackify.com/logging-logback/
+https://docs.vavr.io/
+
+
+
+
+
+== Building Container Image
+
+Java Docker / OCI Images are known for its large size. For example the default openjdk:17-alpine image with 318 MB
+https://hub.docker.com/layers/openjdk/library/openjdk/17-alpine/images/sha256-a996cdcc040704ec6badaf5fecf1e144c096e00231a29188596c784bcf858d05?context=explore
+
+There are plenty of reasons why an image should be as small as possible, so we will try to reduce it.
+
+
+=== Optimise OpenJDK Size
+
+Since Java 9 and the modular system of java a downsizing of the JavaVM is possible.
+For that two commandline tools are essential: jdeps and jlink.
+
+*jdeps* analyzes an existing jar and shows the java module dependencies.
+For further details check the spec https://docs.oracle.com/en/java/javase/17/docs/specs/man/jdeps.html
+
+*jlink* assemble and optimize a set of modules and their dependencies into a custom runtime image
+For further details check the spec https://docs.oracle.com/en/java/javase/17/docs/specs/man/jlink.html
+
+Lets check the results:
+
+.Build the image
+[source, bash]
+----
+./build-and-push-pure-java-openjdk.sh
+----
+
+[source, bash]
+----
+dive pure-java-openjdk:latest
+
+78 MB  FROM f4e4234198a7e18 (base image)
+52 MB  #(nop) COPY dir:24945eb841051a50c7783352cb8fd98321f8ff8aba26bba40b315fee759ecd77 in /opt/jre-minimal (reduced java vm)
+3.4 MB  #(nop) COPY file:b81b91a7afb222cc418f2ff134032716e92dd96b456aafb981329ba64eb23bc8 in app.jar (java app)
+Total Image size: 134 MB
+----
+
+
+
+=== Optimise Base Image for OpenJDK
+
+To build a small base image what prepared for the JDK Wolfi and Apko will be used.
+
+* https://github.com/wolfi-dev/os
+* https://edu.chainguard.dev/open-source/wolfi/overview/
+* https://github.com/chainguard-dev/apko
+* https://edu.chainguard.dev/open-source/apko/overview/
+
+
+5.9 MB  FROM 9d3ca574b58dab2 (base image)
+52 MB  COPY /opt/jre-minimal /opt/jre-minimal # buildkit
+3.4 MB  COPY /home/app/target/java-pure-apko*jar-with-dependencies.jar /app.jar
+Total Image size: 61 MB
+
+
+Default cgr.dev/chainguard/gcc-musl:latest 149 MB

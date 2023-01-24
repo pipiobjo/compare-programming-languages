@@ -11,7 +11,13 @@ https://docs.vavr.io/
 
 == Building Container Image
 
-=== Optimise OpenJDK Image
+Java Docker / OCI Images are known for its large size. For example the default openjdk:17-alpine image with 318 MB
+https://hub.docker.com/layers/openjdk/library/openjdk/17-alpine/images/sha256-a996cdcc040704ec6badaf5fecf1e144c096e00231a29188596c784bcf858d05?context=explore
+
+There are plenty of reasons why an image should be as small as possible, so we will try to reduce it.
+
+
+=== Optimise OpenJDK Size
 
 Since Java 9 and the modular system of java a downsizing of the JavaVM is possible.
 For that two commandline tools are essential: jdeps and jlink.
@@ -40,5 +46,22 @@ dive pure-java-openjdk:latest
 Total Image size: 134 MB
 ----
 
-Default openjdk:17-alpine image 318 MB
-https://hub.docker.com/layers/openjdk/library/openjdk/17-alpine/images/sha256-a996cdcc040704ec6badaf5fecf1e144c096e00231a29188596c784bcf858d05?context=explore
+
+
+=== Optimise Base Image for OpenJDK
+
+To build a small base image what prepared for the JDK Wolfi and Apko will be used.
+
+* https://github.com/wolfi-dev/os
+* https://edu.chainguard.dev/open-source/wolfi/overview/
+* https://github.com/chainguard-dev/apko
+* https://edu.chainguard.dev/open-source/apko/overview/
+
+
+5.9 MB  FROM 9d3ca574b58dab2 (base image)
+52 MB  COPY /opt/jre-minimal /opt/jre-minimal # buildkit
+3.4 MB  COPY /home/app/target/java-pure*jar-with-dependencies.jar /app.jar
+Total Image size: 61 MB
+
+
+Default cgr.dev/chainguard/gcc-musl:latest 149 MB

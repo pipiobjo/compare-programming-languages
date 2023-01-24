@@ -1,3 +1,0 @@
-[EXECUTABLE]
-pure-java-rest-native
-

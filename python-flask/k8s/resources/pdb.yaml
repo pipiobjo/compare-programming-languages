@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: python-flask
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: python-flask

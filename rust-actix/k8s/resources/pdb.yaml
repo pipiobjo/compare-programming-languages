@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: rust-actix
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: rust-actix

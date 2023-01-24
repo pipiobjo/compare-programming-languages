@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-pure-apko
+  labels:
+    app: java-pure-apko
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-pure-apko
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+      labels:
+        app: java-pure-apko
+
+    spec:
+      containers:
+        - name: java-pure-apko
+          image: java-pure-apko
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+            - containerPort: 8081
+          startupProbe:
+            httpGet:
+              path: /ops/start
+              port: 8081
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ops/ready
+              port: 8081
+            initialDelaySeconds: 2
+            periodSeconds: 15
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /ops/live
+              port: 8081
+            initialDelaySeconds: 2
+            periodSeconds: 15
+            failureThreshold: 3
+          resources:
+            limits:
+              cpu:    "500m"   # maximum amount of cpu in millicpu
+              memory: "200Mi"  # maximum amount of ram for the container
+            requests:
+              cpu:    "20m"   # minimum amount of cpu in millicpu
+              memory: "20Mi"  # minimum amount of ram

@@ -23,11 +23,13 @@ export function buildUrl(userName, password, path){
     return baseURL;
 }
 
-// activate console and html reports
+// activate console and html results
 export function handleSummary(data) {
     const reportOutput = `${__ENV.REPORT_FILE}`;
+    const reportOutputJSON = `${__ENV.REPORT_FILE_JSON}`;
     return {
         [reportOutput]: htmlReport(data),
+        [reportOutputJSON]: JSON.stringify(data),
         stdout: textSummary(data, { indent: " ", enableColors: true }),
     };
 }

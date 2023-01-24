@@ -13,8 +13,7 @@ SERVICE_DOCKER_FILE="${SERVICE_FOLDER}/docker/openjdk/Dockerfile"
   --dockerfile ${SERVICE_DOCKER_FILE} \
   --dockerImageName ${SERVICE_FOLDER_NAME}
 
-echo "MY_IMAGE_VERSION_TAG=$GENERATED_IMAGE"
 . ${SCRIPT_DIR}/generic-k8s-kustomize-build.sh \
-  --serviceFolder ../java-pure \
+  --serviceFolder "${SERVICE_FOLDER}" \
   --dockerImageName "${GENERATED_IMAGE}"
 

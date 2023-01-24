@@ -107,7 +107,7 @@ kubectl config use-context "kind-${KIND_CLUSTER_NAME}"
 echo ${SERVICE_K8S_FOLDER}
 kustomize build ${SERVICE_K8S_FOLDER} | kubectl apply -f -
 
-#rm "${KUSTOMIZE_FILE}"
+rm "${KUSTOMIZE_FILE}"
 
 
 

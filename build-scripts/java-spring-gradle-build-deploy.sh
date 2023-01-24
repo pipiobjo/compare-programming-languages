@@ -15,6 +15,6 @@ SERVICE_DOCKER_FILE="${SERVICE_FOLDER}/docker/openjdk/Dockerfile"
 
 echo "MY_IMAGE_VERSION_TAG=$GENERATED_IMAGE"
 . ${SCRIPT_DIR}/generic-k8s-kustomize-build.sh \
-  --serviceFolder ../java-spring-gradle \
+  --serviceFolder "${SERVICE_FOLDER}" \
   --dockerImageName "${GENERATED_IMAGE}"
 

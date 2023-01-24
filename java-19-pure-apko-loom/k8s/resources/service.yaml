@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: java-19-pure-apko-loom
+spec:
+  selector:
+    app: java-19-pure-apko-loom
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

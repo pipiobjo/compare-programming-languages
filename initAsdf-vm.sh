@@ -34,6 +34,10 @@ asdf plugin-add dive https://github.com/looztra/asdf-dive
 asdf install dive 0.10.0
 asdf local dive 0.10.0
 
+asdf plugin-add go
+asdf install go 1.19
+asdf local go 1.19
+
 asdf plugin add k6
 asdf install k6 0.41.0
 asdf local k6 0.41.0

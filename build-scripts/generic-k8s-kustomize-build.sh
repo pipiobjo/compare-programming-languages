@@ -102,12 +102,12 @@ cat "${KUSTOMIZE_FILE}"
 #cd "${SERVICE_K8S_FOLDER}"
 
 
-echo "ensure we using $KIND_CLUSTER_NAME k8s cluster"
+echo -e "\nensure we using $KIND_CLUSTER_NAME k8s cluster"
 kubectl config use-context "kind-${KIND_CLUSTER_NAME}"
-
+echo ${SERVICE_K8S_FOLDER}
 kustomize build ${SERVICE_K8S_FOLDER} | kubectl apply -f -
 
-rm "${KUSTOMIZE_FILE}"
+#rm "${KUSTOMIZE_FILE}"
 
 
 

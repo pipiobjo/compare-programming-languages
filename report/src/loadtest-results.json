@@ -1,14 +1,1 @@
-{
-  "java-pure-apko": {
-    "container-image-size": "reports/java-pure-apko/container-image-size.json",
-    "loadtest-results": "reports/java-pure-apko/loadtest-results.json",
-    "perf-cpu": "reports/java-pure-apko/perf-cpu.json",
-    "perf-mem": "reports/java-pure-apko/perf-mem.json"
-  },
-  "java-pure": {
-    "container-image-size": "reports/java-pure/container-image-size.json",
-    "loadtest-results": "reports/java-pure/loadtest-results.json",
-    "perf-cpu": "reports/java-pure/perf-cpu.json",
-    "perf-mem": "reports/java-pure/perf-mem.json"
-  }
-}
+{"java-pure-apko":{"container-image-size":"reports/java-pure-apko/container-image-size.json","loadtest-results":"reports/java-pure-apko/loadtest-results.json","perf-cpu":"reports/java-pure-apko/perf-cpu.json","perf-mem":"reports/java-pure-apko/perf-mem.json"},"java-pure":{"container-image-size":"reports/java-pure/container-image-size.json","loadtest-results":"reports/java-pure/loadtest-results.json","perf-cpu":"reports/java-pure/perf-cpu.json","perf-mem":"reports/java-pure/perf-mem.json"},"rust-actix":{"container-image-size":"reports/rust-actix/container-image-size.json","loadtest-results":"reports/rust-actix/loadtest-results.json","perf-cpu":"reports/rust-actix/perf-cpu.json","perf-mem":"reports/rust-actix/perf-mem.json"}}

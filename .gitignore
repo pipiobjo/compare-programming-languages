@@ -7,3 +7,4 @@ report/.parcel-cache/
 report/node_modules
 report/dist
 k6-load-testing/node_modules
+src/loadtest-results.json

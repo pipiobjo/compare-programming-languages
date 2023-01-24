@@ -126,8 +126,6 @@ export function testUserGreetings(userObj){
 
 
 export default function () {
-    console.log("virtual user test code");
-
     TEST_USERS.forEach((element, index, array) => {
         testUserGreetings(element);
     });

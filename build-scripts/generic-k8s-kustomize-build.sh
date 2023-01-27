@@ -94,6 +94,7 @@ if  [ -z "$KUSTOMIZE_FILE" ] || [ -f "$KUSTOMIZE_FILE" ]; then
 fi
 
 MY_IMAGE=${DOCKER_IMAGE_NAME}
+echo -e "${GREEN}k8s manifest using image: ${DOCKER_IMAGE_NAME}${NO_COLOR} "
 sed "s|MY_IMAGE|$MY_IMAGE|g" "${KUSTOMIZE_TPL_FILE}" > "${KUSTOMIZE_FILE}"
 cat "${KUSTOMIZE_FILE}"
 

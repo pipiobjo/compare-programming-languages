@@ -15,5 +15,5 @@ SERVICE_DOCKER_FILE="${SERVICE_FOLDER}/docker/Dockerfile"
 
 echo "MY_IMAGE_VERSION_TAG=$GENERATED_IMAGE"
 . ${SCRIPT_DIR}/generic-k8s-kustomize-build.sh \
-  --serviceFolder ../python-flask \
+  --serviceFolder "${SERVICE_FOLDER}" \
   --dockerImageName "${GENERATED_IMAGE}"

@@ -23,6 +23,7 @@ BUILD_SCRIPTS="${SCRIPT_DIR}/build-scripts"
 ${BUILD_SCRIPTS}/java-19-pure-apko-loom-build-deploy.sh
 ${BUILD_SCRIPTS}/java-pure-apko-build-deploy.sh
 ${BUILD_SCRIPTS}/java-pure-build-deploy.sh
+${BUILD_SCRIPTS}/python-flask-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-actix-build-deploy.sh
 ${BUILD_SCRIPTS}/java-spring-gradle-build-deploy.sh
 
@@ -33,6 +34,7 @@ ${BUILD_SCRIPTS}/java-19-pure-apko-loom-load-tests.sh
 ${BUILD_SCRIPTS}/java-pure-apko-load-tests.sh
 ${BUILD_SCRIPTS}/java-pure-load-tests.sh
 ${BUILD_SCRIPTS}/java-spring-gradle-load-tests.sh
+${BUILD_SCRIPTS}/python-flask-load-tests.sh
 ${BUILD_SCRIPTS}/rust-actix-load-tests.sh
 
 

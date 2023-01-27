@@ -5,6 +5,8 @@ const loadTestData = {};
 const imageSizeData = {};
 const cpuDataSet = {};
 const memDataSet = {};
+const buttonArrray = [];
+const errors = {};
 
 
 function formatBytes(bytes, decimals = 2) {
@@ -169,6 +171,9 @@ async function loadServiceData(prefix, serviceReports) {
     const containerImageSizePath = serviceReports["container-image-size"];
     const perfCPUPath = serviceReports["perf-cpu"];
     const perfMemPath = serviceReports["perf-mem"];
+    const loadTestHtml = serviceReports["loadtest-results.html"]
+
+    console.log("htmlarray", loadTestHtml)
 
     // console.log(loadTestResultsPath, "loadTestResultsPath");
     // console.log(containerImageSizePath, "containerImageSizePath");
@@ -179,14 +184,17 @@ async function loadServiceData(prefix, serviceReports) {
         fetch(loadTestResultsPath),
         fetch(containerImageSizePath),
         fetch(perfCPUPath),
-        fetch(perfMemPath)
+        fetch(perfMemPath),
     ]);
+    const loadTestHtmlFetched = await fetch(loadTestHtml)
+        .then(res => res.url)
     const [loadTestResults, containerImageSize, perfCPU, perfMem] = await Promise.all(responsesJSON.map(r => r.json()));
     // console.log("loadtest", loadTestResults);
     // console.log("containerImages", containerImageSize);
     // console.log('cpu', perfCPU);
     // console.log('mem', perfMem);
 
+    await getFailedRequestsWithCallback(loadTestHtml, loadTestHtmlFetched, prefix, addHtmlFilesAndButtons)
 
     prepareLoadTestData(prefix, loadTestResults);
     prepareContainerImageSizesData(prefix, containerImageSize);
@@ -195,6 +203,49 @@ async function loadServiceData(prefix, serviceReports) {
 
 
 
+}
+
+async function getFailedRequestsWithCallback(loadTestHtml, fetchedHTML, prefix, callback) {
+    let r = new FileReader();
+    r.onload = function (e) {
+        let failedRequestsCount;
+        let contents = e.target.result
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(contents.toString(), "text/html")
+        const headers = doc.getElementsByTagName("h4")
+        Array.from(headers).map(header => {
+            if (header.innerHTML === "Failed Requests") {
+                failedRequestsCount = header.nextElementSibling.innerHTML
+            }
+        })
+        callback(fetchedHTML, prefix, failedRequestsCount)
+    }
+    const blob = await fetch(loadTestHtml).then(res => res.blob())
+    r.readAsText(blob)
+}
+
+function addHtmlFilesAndButtons(htmlFile, prefix, failedRequests) {
+    console.log("FAILED FOUND", failedRequests)
+    const buttonId = "id" + prefix
+    const tabButton = document.createElement("button")
+    tabButton.id = buttonId
+    tabButton.style.cssText = "height:50px;width:100px";
+    tabButton.innerHTML = prefix;
+    document.getElementById("test-tabs").appendChild(tabButton);
+    const htmlDisplayObject =  document.getElementById("loadtest_result")
+    buttonArrray.push(tabButton)
+    tabButton.addEventListener("click", () => {
+        htmlDisplayObject.data = htmlFile
+        buttonArrray.forEach(button => {
+            if (button.id !== tabButton.id) {
+                button.classList.remove('active')
+            }
+        })
+        tabButton.classList.toggle('active');
+    })
+    if (failedRequests > 0){
+        tabButton.classList.add("error")
+    }
 }
 
 
@@ -313,7 +364,7 @@ async function prepareChartData(){
 
     // resource data
     // cpu - loadtest results
-    console.log("cpu_data", cpuDataSet);
+    console.log("loadtest_rsult", cpuDataSet);
     new Chart(
         document.getElementById('perf_cpu'),
         {
@@ -388,6 +439,5 @@ async function prepareChartData(){
             data: memDataSet,
         }
     );
-
 
 })();

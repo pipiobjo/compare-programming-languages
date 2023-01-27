@@ -18,6 +18,7 @@ BUILD_SCRIPTS="${SCRIPT_DIR}/build-scripts"
 
 ${BUILD_SCRIPTS}/java-pure-apko-build-deploy.sh
 ${BUILD_SCRIPTS}/java-pure-build-deploy.sh
+${BUILD_SCRIPTS}/python-flask-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-actix-build-deploy.sh
 
 
@@ -25,6 +26,7 @@ echo "execute all load tests"
 
 ${BUILD_SCRIPTS}/java-pure-apko-load-tests.sh
 ${BUILD_SCRIPTS}/java-pure-load-tests.sh
+${BUILD_SCRIPTS}/python-flask-load-tests.sh
 ${BUILD_SCRIPTS}/rust-actix-load-tests.sh
 
 

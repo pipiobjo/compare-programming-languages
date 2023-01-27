@@ -4,7 +4,7 @@ const path = require("path");
 
 
 
-glob('./dist/reports/**/*.json', (err, files) => {
+glob('./dist/reports/**/*.{json,html}', (err, files) => {
     if (err) {
         return console.error(err)
     }

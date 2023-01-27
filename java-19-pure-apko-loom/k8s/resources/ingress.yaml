@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: java-19-pure-apko-loom
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /java-19-pure-apko-loom(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: java-19-pure-apko-loom
+                port:
+                  number: 80

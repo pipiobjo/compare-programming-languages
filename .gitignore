@@ -7,6 +7,4 @@ report/.parcel-cache/
 report/node_modules
 report/dist
 k6-load-testing/node_modules
-/java-pure-apko/docker/java-base-apko/*.tar
-/java-pure-apko/docker/java-base-apko/*.cdx
-/java-pure-apko/docker/java-base-apko/*.spdx.json
+src/loadtest-results.json

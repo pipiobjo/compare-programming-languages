@@ -1,19 +1,21 @@
 import copy
 import uuid
 from flask import request, make_response, jsonify
+
+from app.models import User
 from auth import auth_bp
 from auth.constants import application_json
-from auth.utility import clean_user, find_user, validate_request, find_user_by_name_password
+from auth.utility import find_user, validate_request, find_user_by_name_password
 
 users = []
 
 
 @auth_bp.route('/api/user', methods=["GET", "POST"])
-def user():
+def api_user():
     if request.method == "GET":
         request_args = request.args
         if len(request_args) == 0:
-            response = make_response([clean_user(cleaned_user) for cleaned_user in copy.deepcopy(users)], 200)
+            response = make_response([user.to_json() for user in users], 200)
             response.headers["Content-Type"] = application_json
             return response
         if len(request_args) > 0:
@@ -23,13 +25,13 @@ def user():
         errors = validate_request(data, users)
         if errors is None:
             user_id = uuid.uuid4()
+            users.append(User(login=data["login"], password=data["password"], firstname=data["firstname"],
+                              lastname=data["lastname"], userId=user_id))
             response = make_response(
                 jsonify({"id": user_id}),
                 200
             )
-            data["id"] = user_id
             response.headers["Content-Type"] = application_json
-            users.append(data)
             return response
         else:
             response = make_response()
@@ -46,8 +48,7 @@ def auth_greet():
     found_user = find_user_by_name_password(username, password, users)
     if found_user is not None:
         return make_response(
-            {"msg": "Hello {} {}!".format(found_user["firstname"], found_user["lastname"]),
-             "firstname": found_user["firstname"], "lastname": found_user["lastname"]},
+            found_user.greet(),
             200
         )
     else:

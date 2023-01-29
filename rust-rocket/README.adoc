@@ -1,0 +1,6 @@
+= REST API in Rust with Rocket
+
+== Libs
+Rust Book https://doc.rust-lang.org/book/title-page.html
+<br />
+Rocket https://rocket.rs/v0.5-rc/guide/

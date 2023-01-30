@@ -1,0 +1,12 @@
+[package]
+name = "rustrocket"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = { version = "0.5.0-rc.2", features = ["json"] }
+futures = "0.3"
+serde = { version = "1.0.152", features = ["derive"] }
+rocket-basicauth = "2.1.1"

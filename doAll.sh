@@ -27,6 +27,7 @@ ${BUILD_SCRIPTS}/python-flask-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-actix-build-deploy.sh
 ${BUILD_SCRIPTS}/java-spring-gradle-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-rocket-build-deploy.sh
+${BUILD_SCRIPTS}/python-flask-build-deploy.sh
 
 
 echo -e "${GREEN}execute all load tests${NO_COLOR} "
@@ -38,4 +39,5 @@ ${BUILD_SCRIPTS}/java-spring-gradle-load-tests.sh
 ${BUILD_SCRIPTS}/python-flask-load-tests.sh
 ${BUILD_SCRIPTS}/rust-actix-load-tests.sh
 ${BUILD_SCRIPTS}/rust-rocket-load-tests.sh
+${BUILD_SCRIPTS}/python-flask-load-tests.sh
 

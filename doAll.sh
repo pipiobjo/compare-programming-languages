@@ -1,5 +1,6 @@
 #!/bin/bash
 
+CURRENT_DIR=$(pwd)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/"
 K8S_PLAYGROUND_DIR="${SCRIPT_DIR}/../../k8s-playground/"
 source "$K8S_PLAYGROUND_DIR/kind/shell-based-setup/k8s/scripts/k8s-env.sh"
@@ -23,11 +24,11 @@ BUILD_SCRIPTS="${SCRIPT_DIR}/build-scripts"
 ${BUILD_SCRIPTS}/java-19-pure-apko-loom-build-deploy.sh
 ${BUILD_SCRIPTS}/java-pure-apko-build-deploy.sh
 ${BUILD_SCRIPTS}/java-pure-build-deploy.sh
-${BUILD_SCRIPTS}/python-flask-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-actix-build-deploy.sh
 ${BUILD_SCRIPTS}/java-spring-gradle-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-rocket-build-deploy.sh
 ${BUILD_SCRIPTS}/python-flask-build-deploy.sh
+${BUILD_SCRIPTS}/golang-chi-build-deploy.sh
 
 
 echo -e "${GREEN}execute all load tests${NO_COLOR} "
@@ -36,8 +37,13 @@ ${BUILD_SCRIPTS}/java-19-pure-apko-loom-load-tests.sh
 ${BUILD_SCRIPTS}/java-pure-apko-load-tests.sh
 ${BUILD_SCRIPTS}/java-pure-load-tests.sh
 ${BUILD_SCRIPTS}/java-spring-gradle-load-tests.sh
-${BUILD_SCRIPTS}/python-flask-load-tests.sh
 ${BUILD_SCRIPTS}/rust-actix-load-tests.sh
 ${BUILD_SCRIPTS}/rust-rocket-load-tests.sh
 ${BUILD_SCRIPTS}/python-flask-load-tests.sh
+${BUILD_SCRIPTS}/golang-chi-load-tests.sh
 
+echo -e "${GREEN}prepare reports${NO_COLOR} "
+cd "$SCRIPT_DIR/report"
+npm run report
+
+cd "$CURRENT_DIR"

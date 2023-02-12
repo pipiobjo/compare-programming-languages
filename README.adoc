@@ -43,6 +43,16 @@ link:https://github.com/pipiobjo/k8s-playground[]
 ** load test reports should be placed in load-test-reports
 * if everything is working please create an PR for the repo
 
+if you want to copy and existing k8s config consider using
+
+```bash
+grep -rl oldserviceName . | xargs sed -i 's/oldserviceName/newserviceName/g'
+
+grep -rl java-pure . | xargs sed -i 's/java-pure/golang-chi/g'
+
+```
+
+
 == Load Test
 
 The provided load test scripts using k6s https://k6.io/docs/

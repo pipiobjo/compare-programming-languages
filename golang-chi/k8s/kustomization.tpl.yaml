@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+#  - resources/autoscaler.yaml
+  - resources/deployment.yaml
+  - resources/ingress.yaml
+  - resources/pdb.yaml
+  - resources/service.yaml
+namespace: default
+commonLabels:
+  app: golang-chi
+images:
+  - name: golang-chi
+    newName: MY_IMAGE

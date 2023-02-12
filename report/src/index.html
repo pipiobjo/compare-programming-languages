@@ -20,8 +20,15 @@
 </head>
 <body>
 
+
 <div style="width: 60%;">
-    <h2>Load Test Results</h2>
+    <h2>Request Count</h2>
+    <canvas id="request_count_chart"></canvas>
+</div>
+
+<div style="width: 60%;">
+    <h2>Request Duration</h2>
+
     <canvas id="http_req_duration_avg"></canvas>
     <select onChange="log()">
         <option value="req_duration_max">Max request duration</option>

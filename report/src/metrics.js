@@ -2,6 +2,7 @@ import Chart from 'chart.js/auto';
 import reportFiles from './loadtest-results.json';
 
 const loadTestData = {};
+const requestCountData = {};
 const imageSizeData = {};
 const cpuDataSet = {};
 const memDataSet = {};
@@ -51,8 +52,35 @@ function prepareLoadTestData(prefix, loadTestResults){
     const httpRequestDurationMin = loadTestResults.metrics["http_req_duration"].values.min;
     const httpRequestDurationP90 = loadTestResults.metrics["http_req_duration"].values["p(90)"];
     const httpRequestDurationP95 = loadTestResults.metrics["http_req_duration"].values["p(95)"];
+    const totalRequests = loadTestResults.metrics["http_reqs"].values.count;
+    const totalErrors = loadTestResults.metrics["http_req_failed"].values.passes;
 
 
+    // prepare request count data
+    if(!requestCountData.labels){
+        requestCountData.labels=[];
+    }
+    requestCountData.labels.push(prefix);
+
+    if(!requestCountData.datasets){
+        requestCountData.datasets=[{
+            "label": "totalRequests",
+            "data": [],
+        }, {
+            "label": "failedRequests",
+            "data": [],
+        }];
+    }
+
+    console.log("requestCountData-"+prefix, loadTestResults);
+
+    requestCountData.datasets[0].data.push(totalRequests);
+    console.log("totalErrors:", totalErrors)
+    requestCountData.datasets[1].data.push(totalErrors);
+
+
+
+    // prepare duration data
     if(!loadTestData.labels){
         loadTestData.labels=[];
     }
@@ -308,6 +336,18 @@ async function prepareChartData(){
 
     // loadtest results
     console.log("loadTestData", loadTestData)
+    // request count chart
+    new Chart(
+        document.getElementById('request_count_chart'),
+        {
+            type: 'bar',
+            data: requestCountData,
+            options: {
+                barValueSpacing: 20,
+            }
+        });
+
+    // request duration charts
     new Chart(
         document.getElementById('http_req_duration_avg'),
         {

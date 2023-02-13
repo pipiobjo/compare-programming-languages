@@ -24,6 +24,7 @@ source "$K8S_PLAYGROUND_DIR/kind/shell-based-setup/k8s/scripts/define-colors.sh"
 DOCKER_CONTEXT_FOLDER=
 DOCKER_FILE=
 DOCKER_IMAGE_NAME=
+REPORT_NAME=
 
 ###
 ### parse parameters
@@ -50,6 +51,10 @@ while :; do
             ;;
         --dockerImageName)       # Takes an option argument; ensure it has been specified.
                 DOCKER_IMAGE_NAME=$2
+            shift
+            ;;
+        --reportName)       # Takes an option argument; ensure it has been specified.
+                REPORT_NAME=$2
             shift
             ;;
         --)              # End of all options.
@@ -85,6 +90,11 @@ fi
 
 if  [ -z "$DOCKER_IMAGE_NAME" ]; then
  echo -e "${RED}Parameter --dockerImageName missing ${DOCKER_IMAGE_NAME}${NO_COLOR} "
+ exit 1
+fi
+
+if [ -z "$REPORT_NAME" ]; then
+ echo -e "${RED}Parameter --reportName missing ${REPORT_NAME}${NO_COLOR} "
  exit 1
 fi
 
@@ -124,6 +134,11 @@ END=$(date +%s)
 DIFF=$(( $END - $START ))
 
 echo -e "${GREEN}Full docker build took $DIFF seconds ${MY_IMAGE_VERSION_TAG}${NO_COLOR} "
+BUILD_REPORT_FIle="${SCRIPT_DIR}/../report/dist/reports/${REPORT_NAME}/build-duration.json"
+
+echo -e "${GREEN}Writing build report to ${BUILD_REPORT_FIle}${NO_COLOR} "
+echo "{\"buildDuration\": $DIFF}" > $BUILD_REPORT_FIle
+
 export GENERATED_IMAGE=${MY_IMAGE_VERSION_TAG}
 
 

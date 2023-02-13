@@ -82,13 +82,13 @@ echo -e "${GREEN}Curl cpu data: ${MICROSERVICE_NAME}${NO_COLOR} "
 
 # CPU DATA
 #curl -s -g 'http://localhost:9090/api/v1/query?query=container_cpu_user_seconds_total{container="java-pure"}[5m]' | jq -r '.data.result[0].values'
-CPU_QUERY_URL="http://localhost:9090/api/v1/query?query=container_cpu_user_seconds_total{container=\"${MICROSERVICE_NAME}\"}[5m]"
+CPU_QUERY_URL="http://localhost:9090/api/v1/query?query=container_cpu_user_seconds_total{container=\"${MICROSERVICE_NAME}\"}[10m]"
 echo "CPU_QUERY_URL=${CPU_QUERY_URL}"
 CPU_DATA=$(curl -s -g "${CPU_QUERY_URL}")
 echo "$CPU_DATA" > ${CPU_PERF_DATA_JSON}
 
 # MEM DATA
-MEM_QUERY_URL="http://localhost:9090/api/v1/query?query=container_memory_rss{container=\"${MICROSERVICE_NAME}\"}[5m]"
+MEM_QUERY_URL="http://localhost:9090/api/v1/query?query=container_memory_rss{container=\"${MICROSERVICE_NAME}\"}[10m]"
 #curl -s -g 'http://localhost:9090/api/v1/query?query=container_memory_rss{container="${MICROSERVICE_NAME}"}[5m]' | jq -r '.data.result[0].values'
 echo "MEM_QUERY_URL=${MEM_QUERY_URL}"
 MEM_DATA=$(curl -s -g "${MEM_QUERY_URL}")

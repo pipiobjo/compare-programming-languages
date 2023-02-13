@@ -3,6 +3,7 @@ import reportFiles from './loadtest-results.json';
 
 const loadTestData = {};
 const requestCountData = {};
+const buildDurationData = {};
 const imageSizeData = {};
 const cpuDataSet = {};
 const memDataSet = {};
@@ -22,7 +23,6 @@ function formatBytes(bytes, decimals = 2) {
 
 function prepareContainerImageSizesData(prefix, containerImageData){
     const imageSize = containerImageData["image-size"];
-    // console.log("containerImageSize " + prefix, imageSize);
 
     imageSizeData
 
@@ -43,7 +43,22 @@ function prepareContainerImageSizesData(prefix, containerImageData){
     });
 }
 
+function prepareBuildDurationData(prefix, buildDuration) {
 
+    if(!buildDurationData.labels){
+        buildDurationData.labels=[];
+    }
+
+    if(!buildDurationData.datasets){
+        buildDurationData.datasets=[{
+            "label": "buildDuration",
+            "data": [],
+        }];
+    }
+    buildDurationData.labels.push(prefix);
+    buildDurationData.datasets[0].data.push(buildDuration.buildDuration);
+
+}
 
 function prepareLoadTestData(prefix, loadTestResults){
     const httpRequestDurationAvg = loadTestResults.metrics["http_req_duration"].values.avg;
@@ -72,53 +87,31 @@ function prepareLoadTestData(prefix, loadTestResults){
         }];
     }
 
-    console.log("requestCountData-"+prefix, loadTestResults);
-
     requestCountData.datasets[0].data.push(totalRequests);
-    console.log("totalErrors:", totalErrors)
     requestCountData.datasets[1].data.push(totalErrors);
 
 
 
     // prepare duration data
     if(!loadTestData.labels){
-        loadTestData.labels=[];
+        loadTestData.labels=["average", "median", "max", "min", "p90", "p95"];
     }
 
     if(!loadTestData.datasets){
         loadTestData.datasets=[];
     }
-    loadTestData.labels.push(prefix);
+    loadTestData.datasets[loadTestData.datasets.length]= {
+        label: prefix,
+        data: [httpRequestDurationAvg, httpRequestDurationMed, httpRequestDurationMax, httpRequestDurationMin, httpRequestDurationP90, httpRequestDurationP95]
+    };
 
-    console.log("loadtestData-"+prefix, loadTestResults);
 
-    loadTestData.datasets.push({
-        "label": prefix,
-        data: [{
-            "label": prefix,
 
-        "value-avg": httpRequestDurationAvg,
-        "name-max": prefix + "-avg",
-        "value-max": httpRequestDurationMax,
-        "name-med": prefix + "-med",
-        "value-med": httpRequestDurationMed,
-        "name-min": prefix + "-min",
-        "value-min": httpRequestDurationMin,
-
-        "name-p90": prefix + "-p90",
-        "value-p90": httpRequestDurationP90,
-        "name-p95": prefix + "-p95",
-        "value-p95": httpRequestDurationP95,
-        }]
-    });
-    console.log("final-LT-data", loadTestData);
 }
 
 function unifyValues(values){
-    // console.log("values", values);
     const result = [];
     var min = Math.min(...values.map(item => item[0]));
-    // console.log("min:", min);
     values.map(item => {
         result.push({
             x: item[0] - min,
@@ -132,10 +125,8 @@ function unifyValues(values){
 
 
 function unifyValuesMemory(values){
-    // console.log("values", values);
     const result = [];
     var min = Math.min(...values.map(item => item[0]));
-    // console.log("min:", min);
     values.map(item => {
         result.push({
             x: item[0] - min,
@@ -148,10 +139,8 @@ function unifyValuesMemory(values){
 }
 
 function prepareMemData(prefix, perfData){
-    // console.log("mem-perfData", perfData)
     const values = perfData.data.result[0].values;
     let unifiedVal = unifyValuesMemory(values);
-    // console.log("unified values", unifiedVal);
 
     if(!memDataSet.labels){
         memDataSet.labels=[];
@@ -172,10 +161,8 @@ function prepareMemData(prefix, perfData){
 }
 
 function prepareCpuData(prefix, perfData){
-    // console.log("cpuData-"+prefix , perfData)
     const values = perfData.data.result[0].values;
     let unifiedVal = unifyValues(values);
-    // console.log("unified values", unifiedVal);
 
     if(!cpuDataSet.labels){
         cpuDataSet.labels=[];
@@ -194,104 +181,56 @@ function prepareCpuData(prefix, perfData){
 }
 
 async function loadServiceData(prefix, serviceReports) {
-    console.log("data preparation:", prefix)
     const loadTestResultsPath = serviceReports["loadtest-results"];
     const containerImageSizePath = serviceReports["container-image-size"];
     const perfCPUPath = serviceReports["perf-cpu"];
     const perfMemPath = serviceReports["perf-mem"];
+    const buildDurationPath = serviceReports["build-duration"];
     const loadTestHtml = serviceReports["loadtest-results.html"]
-
-    console.log("htmlarray", loadTestHtml)
-
-    // console.log(loadTestResultsPath, "loadTestResultsPath");
-    // console.log(containerImageSizePath, "containerImageSizePath");
-    // console.log(perfCPUPath, "perfCPUPath");
-    // console.log(perfMemPath, "perfMemPath");
 
     const responsesJSON = await Promise.all([
         fetch(loadTestResultsPath),
         fetch(containerImageSizePath),
         fetch(perfCPUPath),
         fetch(perfMemPath),
+        fetch(buildDurationPath),
     ]);
-    const loadTestHtmlFetched = await fetch(loadTestHtml)
-        .then(res => res.url)
-    const [loadTestResults, containerImageSize, perfCPU, perfMem] = await Promise.all(responsesJSON.map(r => r.json()));
+    // const loadTestHtmlFetched = await fetch(loadTestHtml)
+    //     .then(res => res.url)
+    const [loadTestResults, containerImageSize, perfCPU, perfMem, buildDuration] = await Promise.all(responsesJSON.map(r => r.json()));
+    // console.log("--------------------------------------------------------------------------------")
     // console.log("loadtest", loadTestResults);
     // console.log("containerImages", containerImageSize);
     // console.log('cpu', perfCPU);
     // console.log('mem', perfMem);
-
-    await getFailedRequestsWithCallback(loadTestHtml, loadTestHtmlFetched, prefix, addHtmlFilesAndButtons)
+    // console.log('buildDuration', buildDuration);
+    // console.log("--------------------------------------------------------------------------------")
+    // await getFailedRequestsWithCallback(loadTestHtml, loadTestHtmlFetched, prefix, addHtmlFilesAndButtons)
 
     prepareLoadTestData(prefix, loadTestResults);
     prepareContainerImageSizesData(prefix, containerImageSize);
     prepareCpuData(prefix,perfCPU);
     prepareMemData(prefix,perfMem);
+    prepareBuildDurationData(prefix, buildDuration);
 
 
 
 }
 
-async function getFailedRequestsWithCallback(loadTestHtml, fetchedHTML, prefix, callback) {
-    let r = new FileReader();
-    r.onload = function (e) {
-        let failedRequestsCount;
-        let contents = e.target.result
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(contents.toString(), "text/html")
-        const headers = doc.getElementsByTagName("h4")
-        Array.from(headers).map(header => {
-            if (header.innerHTML === "Failed Requests") {
-                failedRequestsCount = header.nextElementSibling.innerHTML
-            }
-        })
-        callback(fetchedHTML, prefix, failedRequestsCount)
-    }
-    const blob = await fetch(loadTestHtml).then(res => res.blob())
-    r.readAsText(blob)
-}
-
-function addHtmlFilesAndButtons(htmlFile, prefix, failedRequests) {
-    console.log("FAILED FOUND", failedRequests)
-    const buttonId = "id" + prefix
-    const tabButton = document.createElement("button")
-    tabButton.id = buttonId
-    tabButton.style.cssText = "height:50px;width:100px";
-    tabButton.innerHTML = prefix;
-    document.getElementById("test-tabs").appendChild(tabButton);
-    const htmlDisplayObject =  document.getElementById("loadtest_result")
-    buttonArrray.push(tabButton)
-    tabButton.addEventListener("click", () => {
-        htmlDisplayObject.data = htmlFile
-        buttonArrray.forEach(button => {
-            if (button.id !== tabButton.id) {
-                button.classList.remove('active')
-            }
-        })
-        tabButton.classList.toggle('active');
-    })
-    if (failedRequests > 0){
-        tabButton.classList.add("error")
-    }
-}
 
 
 async function prepareChartData(){
     for (const key in reportFiles) {
 
-        console.log(key, reportFiles[key]);
         const serviceReports = reportFiles[key];
-
         await loadServiceData(key, serviceReports)
 
     }
 }
 
-
+var requestDurationChart;
 
 (async function() {
-    console.log("reportFiles", reportFiles);
 
     await prepareChartData();
 
@@ -333,9 +272,48 @@ async function prepareChartData(){
         }
     );
 
+    //build duration
+    console.log("build-duration-data", buildDurationData)
+    new Chart(
+        document.getElementById('build_duration_chart'),
+        {
+            type: 'bar',
+            data: buildDurationData,
+            options: {
+                barValueSpacing: 2,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Build Duration"
+                    },
+                    legend: {
+                        display: true,
+                        position: "top",
+                        fullWidth: true,
 
-    // loadtest results
-    console.log("loadTestData", loadTestData)
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        type: 'category',
+                        title: {
+                            display: true,
+                            text: 'Services',
+                        },
+                    },
+                    y: {
+                        display: true,
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 'Build duration in seconds',
+                        },
+                    }
+                }
+            }
+        });
+
     // request count chart
     new Chart(
         document.getElementById('request_count_chart'),
@@ -343,25 +321,65 @@ async function prepareChartData(){
             type: 'bar',
             data: requestCountData,
             options: {
-                barValueSpacing: 20,
+                barValueSpacing: 2,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Http Request Counts - log scale"
+                    },
+                    legend: {
+                        display: true,
+                        position: "top",
+                        fullWidth: true,
+
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        type: 'category',
+                        title: {
+                            display: true,
+                            text: 'Services',
+                        },
+                    },
+                    y: {
+                        display: true,
+                        type: 'logarithmic',
+                        title: {
+                            display: true,
+                            text: 'Amount of Requests',
+                        },
+                    }
+                }
             }
         });
 
     // request duration charts
-    new Chart(
-        document.getElementById('http_req_duration_avg'),
+    console.log("request duration data", loadTestData)
+    requestDurationChart = new Chart(
+        document.getElementById('http_req_duration'),
         {
             type: 'bar',
             options: {
-                parsing: {
-                    xAxisKey: 'label',
-                    yAxisKey: 'value-avg'
-                },
+              responsive: true,
+              categoryPercentage: 0.8,
+              barPercentage: 0.8,
               plugins: {
-                  legend: true,
+                  beforeInit: function(chart, options) {
+                      chart.legend.afterFit = function() {
+                          this.height = this.height + 50;
+                      };
+                  },
+                  legend: {
+                      display: true,
+                      position: "right",
+                      fullWidth: true,
+
+                  },
                   title: {
                       display: true,
-                      text: "Http Request Duration Avg"
+                      text: "Http Request Duration Avg (ms) - log scale"
                   },
               },
               scales: {
@@ -370,41 +388,28 @@ async function prepareChartData(){
                       labels: loadTestData.labels,
                       title: {
                           display: true,
-                          text: 'Services',
+                          text: 'Durations',
                       },
                   },
                   y: {
                       display: true,
-                      type: 'linear',
+                      type: 'logarithmic',
                       title: {
                           display: true,
-                          text: 'Count',
+                          text: 'Time in ms',
                       },
                   }
               },
             },
             data: loadTestData,
 
-            //     {
-            //     labels: loadTestData.map(row => row.name),
-            //     datasets: [
-            //         {
-            //             label: loadTestData.map(row => row["name"]),
-            //             data: loadTestData.map(row => row["value-avg"])
-            //         },
-            //         // {
-            //         //     label: 'Http Request Duration Max',
-            //         //     data: loadTestData.map(row => row["value-max"])
-            //         // },
-            //     ]
-            // }
         }
     );
 
 
     // resource data
     // cpu - loadtest results
-    console.log("loadtest_rsult", cpuDataSet);
+    console.log("cpu_data", cpuDataSet);
     new Chart(
         document.getElementById('perf_cpu'),
         {

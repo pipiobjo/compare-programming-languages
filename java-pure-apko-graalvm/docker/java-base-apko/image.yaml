@@ -1,0 +1,31 @@
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+#    - ca-certificates-bundle
+    - wolfi-baselayout
+    - glibc
+#    - glibc-locale-en
+#    - busybox
+#    - bash
+    - zlib
+
+accounts:
+  groups:
+    - groupname: java
+      gid: 1000
+  users:
+    - username: java
+      uid: 1000
+  run-as: java
+
+work-dir: /app
+
+
+environment:
+  LANG: en_US.UTF-8
+
+archs:
+  - x86_64

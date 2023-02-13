@@ -9,3 +9,4 @@ report/dist
 k6-load-testing/node_modules
 report/src/loadtest-results.json
 /golang-chi/app/vendor/
+**/kustomization.yaml

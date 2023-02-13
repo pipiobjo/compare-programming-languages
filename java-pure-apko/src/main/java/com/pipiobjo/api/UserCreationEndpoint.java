@@ -25,9 +25,6 @@ public class UserCreationEndpoint implements Endpoint {
     }
     @Override
     public boolean isResponsible(String httpMethod, String path) {
-        if("GET".equals(httpMethod)){
-            log.info("path={}", path);
-        }
         if("POST".equals(httpMethod) && path.startsWith("/api/user")){
             return true;
         }

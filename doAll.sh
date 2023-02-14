@@ -43,9 +43,3 @@ ${BUILD_SCRIPTS}/rust-actix-load-tests.sh
 ${BUILD_SCRIPTS}/rust-rocket-load-tests.sh
 ${BUILD_SCRIPTS}/python-flask-load-tests.sh
 ${BUILD_SCRIPTS}/golang-chi-load-tests.sh
-
-echo -e "${GREEN}prepare reports${NO_COLOR} "
-cd "$SCRIPT_DIR/report"
-npm run report
-
-cd "$CURRENT_DIR"

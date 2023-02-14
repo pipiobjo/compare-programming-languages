@@ -17,7 +17,8 @@ docker load <  "${SERVICE_FOLDER}/docker/java-base-apko/my-java-base.tar"
   --dockerImageName ${SERVICE_FOLDER_NAME} \
   --reportName ${SERVICE_FOLDER_NAME}
 
-. ${SCRIPT_DIR}/generic-k8s-kustomize-build.sh \
+. ${SCRIPT_DIR}/generic-k8s-manifests-build.sh \
   --serviceFolder "${SERVICE_FOLDER}" \
-  --dockerImageName "${GENERATED_IMAGE}"
+  --dockerImageName "${GENERATED_IMAGE}" \
+  --reportName ${SERVICE_FOLDER_NAME}
 

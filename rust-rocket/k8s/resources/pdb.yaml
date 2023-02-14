@@ -1,9 +1,0 @@
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: rust-rocket
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      app: rust-rocket

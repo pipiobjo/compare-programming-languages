@@ -4,6 +4,7 @@ import reportFiles from './loadtest-results.json';
 const loadTestData = {};
 const requestCountData = {};
 const buildDurationData = {};
+const startupDurationData = {};
 const imageSizeData = {};
 const cpuDataSet = {};
 const memDataSet = {};
@@ -42,6 +43,26 @@ function prepareContainerImageSizesData(prefix, containerImageData){
         }]
     });
 }
+
+function prepareStartupDurationData(prefix, data) {
+
+    if(!startupDurationData.labels){
+        startupDurationData.labels=[];
+    }
+
+    if(!startupDurationData.datasets){
+        startupDurationData.datasets=[{
+            "label": "startupTime",
+            "data": [],
+        }];
+    }
+    startupDurationData.labels.push(prefix);
+    startupDurationData.datasets[0].data.push(data.startup_time_in_seconds);
+
+
+
+}
+
 
 function prepareBuildDurationData(prefix, buildDuration) {
 
@@ -180,13 +201,14 @@ function prepareCpuData(prefix, perfData){
         });
 }
 
+
 async function loadServiceData(prefix, serviceReports) {
     const loadTestResultsPath = serviceReports["loadtest-results"];
     const containerImageSizePath = serviceReports["container-image-size"];
     const perfCPUPath = serviceReports["perf-cpu"];
     const perfMemPath = serviceReports["perf-mem"];
     const buildDurationPath = serviceReports["build-duration"];
-    const loadTestHtml = serviceReports["loadtest-results.html"]
+    const startupDurationPath = serviceReports["startup-time"];
 
     const responsesJSON = await Promise.all([
         fetch(loadTestResultsPath),
@@ -194,10 +216,11 @@ async function loadServiceData(prefix, serviceReports) {
         fetch(perfCPUPath),
         fetch(perfMemPath),
         fetch(buildDurationPath),
+        fetch(startupDurationPath),
     ]);
     // const loadTestHtmlFetched = await fetch(loadTestHtml)
     //     .then(res => res.url)
-    const [loadTestResults, containerImageSize, perfCPU, perfMem, buildDuration] = await Promise.all(responsesJSON.map(r => r.json()));
+    const [loadTestResults, containerImageSize, perfCPU, perfMem, buildDuration, startupDuration] = await Promise.all(responsesJSON.map(r => r.json()));
     // console.log("--------------------------------------------------------------------------------")
     // console.log("loadtest", loadTestResults);
     // console.log("containerImages", containerImageSize);
@@ -212,6 +235,7 @@ async function loadServiceData(prefix, serviceReports) {
     prepareCpuData(prefix,perfCPU);
     prepareMemData(prefix,perfMem);
     prepareBuildDurationData(prefix, buildDuration);
+    prepareStartupDurationData(prefix, startupDuration);
 
 
 
@@ -271,6 +295,48 @@ var requestDurationChart;
             data: imageSizeData,
         }
     );
+
+    // startup duration
+    console.log("startup-duration-data", startupDurationData)
+    new Chart(
+        document.getElementById('startup_duration_chart'),
+        {
+            type: 'bar',
+            data: startupDurationData,
+            options: {
+                barValueSpacing: 2,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Startup Duration"
+                    },
+                    legend: {
+                        display: true,
+                        position: "right",
+                        fullWidth: true,
+
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        type: 'category',
+                        title: {
+                            display: true,
+                            text: 'Services',
+                        },
+                    },
+                    y: {
+                        display: true,
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 'Startup duration in seconds',
+                        },
+                    }
+                }
+            }
+        });
 
     //build duration
     console.log("build-duration-data", buildDurationData)

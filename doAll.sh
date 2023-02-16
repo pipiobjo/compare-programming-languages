@@ -2,20 +2,26 @@
 
 CURRENT_DIR=$(pwd)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/"
+BUILD_SCRIPTS="${SCRIPT_DIR}/build-scripts"
 K8S_PLAYGROUND_DIR="${SCRIPT_DIR}/../../k8s-playground/"
 source "$K8S_PLAYGROUND_DIR/kind/shell-based-setup/k8s/scripts/k8s-env.sh"
 # load colors
 source "$K8S_PLAYGROUND_DIR/kind/shell-based-setup/k8s/scripts/define-colors.sh"
 
+cd "${K8S_PLAYGROUND_DIR}"
+. ${K8S_PLAYGROUND_DIR}/kind/shell-based-setup/localK8s.sh
+
+cd ${CURRENT_DIR}
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/"
+BUILD_SCRIPTS="${SCRIPT_DIR}/build-scripts"
 
 echo -e "${GREEN}ensure we using $KIND_CLUSTER_NAME k8s cluster${NO_COLOR} "
-
 kubectl config use-context "kind-${KIND_CLUSTER_NAME}"
-
 echo -e "${GREEN}setup infra${NO_COLOR} "
 
 
-${SCRIPT_DIR}/initInfra.sh
+${BUILD_SCRIPTS}/../initInfra.sh
 
 echo -e "${GREEN}build all service${NO_COLOR} "
 

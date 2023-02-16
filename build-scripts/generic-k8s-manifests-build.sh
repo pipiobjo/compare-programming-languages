@@ -194,7 +194,7 @@ kubectl apply -f $TEMP_FILE
 
 kubectl wait --for=condition=ready pod -l app=${REPORT_NAME} --timeout=60s
 LOCAL_HTTP_PORT=9180
-kubectl port-forward deployment/golang-chi $LOCAL_HTTP_PORT:8080 &
+kubectl port-forward deployment/${REPORT_NAME} $LOCAL_HTTP_PORT:8080 &
 KUBECTL_PID=$!
 echo "KUBECTL_PID: ${KUBECTL_PID}"
 

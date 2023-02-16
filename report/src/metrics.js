@@ -1,8 +1,10 @@
 import Chart from 'chart.js/auto';
+
 import reportFiles from './loadtest-results.json';
 
 const loadTestData = {};
 const requestCountData = {};
+const requestCountTableData = [];
 const buildDurationData = {};
 const startupDurationData = {};
 const imageSizeData = {};
@@ -111,6 +113,12 @@ function prepareLoadTestData(prefix, loadTestResults){
     requestCountData.datasets[0].data.push(totalRequests);
     requestCountData.datasets[1].data.push(totalErrors);
 
+    requestCountTableData.push({
+        "name": prefix,
+        "totalRequests": totalRequests,
+        "failedRequests": totalErrors,
+    });
+
 
 
     // prepare duration data
@@ -202,6 +210,29 @@ function prepareCpuData(prefix, perfData){
 }
 
 
+async function buildRequestCountTable() {
+    console.log("requestCountTableData", requestCountTableData)
+    requestCountTableData.sort((a, b) => (b.totalRequests) - (a.totalRequests));
+    console.log("sorted-requestCountTableData", requestCountTableData)
+    const table = document.getElementById("request_count_table");
+    var rowCount = table.rows.length;
+    var tableHeaderRowCount = 1;
+    for (var i = tableHeaderRowCount; i < rowCount; i++) {
+        table.deleteRow(tableHeaderRowCount);
+    }
+
+
+    requestCountTableData.map(item => {
+        const row = table.insertRow();
+        const name = row.insertCell(0);
+        const totalRequests = row.insertCell(1);
+        const failedRequests = row.insertCell(2);
+        name.innerHTML = item.name;
+        totalRequests.innerHTML = item.totalRequests;
+        failedRequests.innerHTML = item.failedRequests;
+    });
+}
+
 async function loadServiceData(prefix, serviceReports) {
     const loadTestResultsPath = serviceReports["loadtest-results"];
     const containerImageSizePath = serviceReports["container-image-size"];
@@ -231,11 +262,13 @@ async function loadServiceData(prefix, serviceReports) {
     // await getFailedRequestsWithCallback(loadTestHtml, loadTestHtmlFetched, prefix, addHtmlFilesAndButtons)
 
     prepareLoadTestData(prefix, loadTestResults);
+
     prepareContainerImageSizesData(prefix, containerImageSize);
     prepareCpuData(prefix,perfCPU);
     prepareMemData(prefix,perfMem);
     prepareBuildDurationData(prefix, buildDuration);
     prepareStartupDurationData(prefix, startupDuration);
+
 
 
 
@@ -248,8 +281,9 @@ async function prepareChartData(){
 
         const serviceReports = reportFiles[key];
         await loadServiceData(key, serviceReports)
-
     }
+
+    await buildRequestCountTable();
 }
 
 var requestDurationChart;
@@ -381,12 +415,14 @@ var requestDurationChart;
         });
 
     // request count chart
+    console.log("request_count-data", requestCountData)
     new Chart(
         document.getElementById('request_count_chart'),
         {
             type: 'bar',
             data: requestCountData,
             options: {
+                responsive: true,
                 barValueSpacing: 2,
                 plugins: {
                     title: {
@@ -409,9 +445,10 @@ var requestDurationChart;
                             text: 'Services',
                         },
                     },
+
                     y: {
                         display: true,
-                        type: 'logarithmic',
+                        type: 'linear',
                         title: {
                             display: true,
                             text: 'Amount of Requests',
@@ -422,7 +459,7 @@ var requestDurationChart;
         });
 
     // request duration charts
-    console.log("request duration data", loadTestData)
+    console.log("request_duration-data", loadTestData)
     requestDurationChart = new Chart(
         document.getElementById('http_req_duration'),
         {

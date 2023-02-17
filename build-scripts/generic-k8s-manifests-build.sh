@@ -219,8 +219,10 @@ DIFF=$(( $END - $START ))
 
 echo -e "${BLUE}Startup Time: ${DIFF}${NO_COLOR} "
 
-BUILD_REPORT_FIle="${SCRIPT_DIR}/../report/dist/reports/${REPORT_NAME}/startup-time.json"
+BUILD_REPORT_FIle="${SCRIPT_DIR}../report/dist/reports/${REPORT_NAME}/startup-time.json"
 echo -e "${GREEN}Writing startupTime to reportfile: ${BUILD_REPORT_FIle}${NO_COLOR} "
+mkdir -p "${SCRIPT_DIR}../report/dist/reports/${REPORT_NAME}"
+touch $BUILD_REPORT_FIle
 echo "{\"startup_time_in_seconds\": $DIFF}" > $BUILD_REPORT_FIle
 
 

@@ -1,12 +1,15 @@
-import copy
 import uuid
 from flask import request, make_response, jsonify
+import numpy
 
+import array as arr
 from app.models import User
 from auth import auth_bp
 from auth.constants import application_json
-from auth.utility import find_user, validate_request, find_user_by_name_password
+from auth.utility import find_user, validate_request
+from flask_httpauth import HTTPBasicAuth
 
+auth = HTTPBasicAuth()
 users = []
 
 
@@ -25,8 +28,8 @@ def api_user():
         errors = validate_request(data, users)
         if errors is None:
             user_id = uuid.uuid4()
-            users.append(User(login=data["login"], password=data["password"], firstname=data["firstname"],
-                              lastname=data["lastname"], userId=user_id))
+            users.append(User(login=data.get("login"), password=data.get("password"), firstname=data.get("firstname"),
+                              lastname=data.get("lastname"), userId=user_id))
             response = make_response(
                 jsonify({"id": user_id}),
                 200
@@ -42,17 +45,14 @@ def api_user():
 
 
 @auth_bp.route('/api/greeting')
+@auth.login_required
 def auth_greet():
-    username = request.authorization["username"]
-    password = request.authorization["password"]
-    found_user = find_user_by_name_password(username, password, users)
-    if found_user is not None:
-        return make_response(
-            found_user.greet(),
-            200
-        )
-    else:
-        return make_response(
-            {"error": "user not found or password incorrect"},
-            400
-        )
+    return make_response(auth.current_user().greet(), 200)
+
+
+@auth.verify_password
+def verify_password(username, password):
+    for user in users:
+        if user.login == username and user.password == password:
+            return user
+    return False

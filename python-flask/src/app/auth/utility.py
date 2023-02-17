@@ -2,6 +2,9 @@ import copy
 from errors import constants as errors
 
 from flask import make_response, json
+from flask_httpauth import HTTPBasicAuth
+
+auth = HTTPBasicAuth()
 
 
 def find_user(request_arguments, users):

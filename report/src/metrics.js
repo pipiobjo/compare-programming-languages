@@ -217,9 +217,27 @@ const buildTable = async () => {
     const tableRows = []
 
     const tableColumns = [
-        {headerName: 'Service', field: 'service'},
-        {headerName: '# Successful Requests', field: 'successfulRequests', type: 'numberColumn'},
-        {headerName: '# Failed Requests', field: 'failedRequests', type: 'numberColumn'},
+        {
+            headerName: 'Service',
+            field: 'service',
+        },
+        {
+            headerName: '# Successful Requests',
+            field: 'successfulRequests',
+            type: 'numberColumn',
+            initialSort: 'desc',
+            cellStyle: {
+                'text-align': 'right',
+            },
+        },
+        {
+            headerName: '# Failed Requests',
+            field: 'failedRequests',
+            type: 'numberColumn',
+            cellStyle: {
+                'text-align': 'right'
+            }
+        },
     ]
 
     requestCountTableData.forEach(countItem => (
@@ -231,12 +249,12 @@ const buildTable = async () => {
     ));
 
     const defaultColDef = {
-        width: 100,
+        width: 110,
         sortable: true,
         filter: 'agTextColumnFilter',
         resizable: true,
-        wrapHeaderText: true,
         autoHeaderHeight: true,
+        wrapHeaderText: true,
     }
 
     const defaultColGroupDef = {
@@ -245,15 +263,8 @@ const buildTable = async () => {
 
     const columnTypes = {
         numberColumn: {
-            width: 100,
+            width: 120,
             filter: 'agNumberColumnFilter',
-            filterParams: {
-                comparator: (filterValue, cellValue) => {
-                    if (cellValue < filterValue) {
-                        return -1;
-                    }
-                }
-            }
         }
     }
 

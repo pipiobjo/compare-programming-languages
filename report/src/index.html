@@ -2,24 +2,8 @@
 <html lang="en">
 <head>
     <title>Chart.js example</title>
-    <style>
-        .active {
-            background-color: lightblue;
-        }
-
-        .test-tabs {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .error {
-            border: 5px solid red;
-            border-radius: 5px;
-        }
-    </style>
 </head>
 <body>
-
 
 <div style="width: 60%;">
     <h2>Build Duration</h2>
@@ -36,24 +20,15 @@
     <canvas id="container_image_size"></canvas>
 </div>
 
-<div>
-    <div style="width: 60%;">
-
-    </div>
-    <div></div>
-</div>
-
-
-<div style="widtVh: 80%; display: table;">
+<div style="width: 70%">
     <h2>Request Count</h2>
-    <div style="display: table-row">
-        <div style="display: flex;">
-            <canvas id="request_count_chart"></canvas>
-            <div id="myGrid" style="width:300px" class="ag-theme-alpine"></div>
-        </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <canvas id="request_count_chart" style=""></canvas>
+        <div id="myGrid" style="height: 32rem; min-width: 400px; margin-top: 1rem;" class="ag-theme-alpine"></div>
     </div>
 </div>
 
+<!--<div id="myGrid" style="width:350px; height: 76.7%; margin-top: 1.1%" class="ag-theme-alpine"></div>-->
 <div style="width: 80%;">
     <h2>Request Duration</h2>
 

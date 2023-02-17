@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@cubejs-client/core": "^0.31.0",
+    "ag-grid-community": "^29.0.0",
     "chart.js": "^4.0.0"
   }
 }

@@ -1,4 +1,7 @@
 import Chart from 'chart.js/auto';
+import {Grid} from 'ag-grid-community';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import reportFiles from './loadtest-results.json';
 
@@ -10,8 +13,6 @@ const startupDurationData = {};
 const imageSizeData = {};
 const cpuDataSet = {};
 const memDataSet = {};
-const buttonArrray = [];
-const errors = {};
 
 
 function formatBytes(bytes, decimals = 2) {
@@ -23,18 +24,17 @@ function formatBytes(bytes, decimals = 2) {
 
 }
 
-
-function prepareContainerImageSizesData(prefix, containerImageData){
+function prepareContainerImageSizesData(prefix, containerImageData) {
     const imageSize = containerImageData["image-size"];
 
     imageSizeData
 
-    if(!imageSizeData.labels){
-        imageSizeData.labels=[];
+    if (!imageSizeData.labels) {
+        imageSizeData.labels = [];
     }
 
-    if(!imageSizeData.datasets){
-        imageSizeData.datasets=[];
+    if (!imageSizeData.datasets) {
+        imageSizeData.datasets = [];
     }
     imageSizeData.labels.push(prefix);
     imageSizeData.datasets.push({
@@ -48,12 +48,12 @@ function prepareContainerImageSizesData(prefix, containerImageData){
 
 function prepareStartupDurationData(prefix, data) {
 
-    if(!startupDurationData.labels){
-        startupDurationData.labels=[];
+    if (!startupDurationData.labels) {
+        startupDurationData.labels = [];
     }
 
-    if(!startupDurationData.datasets){
-        startupDurationData.datasets=[{
+    if (!startupDurationData.datasets) {
+        startupDurationData.datasets = [{
             "label": "startupTime",
             "data": [],
         }];
@@ -62,18 +62,16 @@ function prepareStartupDurationData(prefix, data) {
     startupDurationData.datasets[0].data.push(data.startup_time_in_seconds);
 
 
-
 }
-
 
 function prepareBuildDurationData(prefix, buildDuration) {
 
-    if(!buildDurationData.labels){
-        buildDurationData.labels=[];
+    if (!buildDurationData.labels) {
+        buildDurationData.labels = [];
     }
 
-    if(!buildDurationData.datasets){
-        buildDurationData.datasets=[{
+    if (!buildDurationData.datasets) {
+        buildDurationData.datasets = [{
             "label": "buildDuration",
             "data": [],
         }];
@@ -83,7 +81,8 @@ function prepareBuildDurationData(prefix, buildDuration) {
 
 }
 
-function prepareLoadTestData(prefix, loadTestResults){
+function prepareLoadTestData(prefix, loadTestResults) {
+    console.log(loadTestResults)
     const httpRequestDurationAvg = loadTestResults.metrics["http_req_duration"].values.avg;
     const httpRequestDurationMax = loadTestResults.metrics["http_req_duration"].values.max;
     const httpRequestDurationMed = loadTestResults.metrics["http_req_duration"].values.med;
@@ -95,13 +94,13 @@ function prepareLoadTestData(prefix, loadTestResults){
 
 
     // prepare request count data
-    if(!requestCountData.labels){
-        requestCountData.labels=[];
+    if (!requestCountData.labels) {
+        requestCountData.labels = [];
     }
     requestCountData.labels.push(prefix);
 
-    if(!requestCountData.datasets){
-        requestCountData.datasets=[{
+    if (!requestCountData.datasets) {
+        requestCountData.datasets = [{
             "label": "totalRequests",
             "data": [],
         }, {
@@ -117,28 +116,32 @@ function prepareLoadTestData(prefix, loadTestResults){
         "name": prefix,
         "totalRequests": totalRequests,
         "failedRequests": totalErrors,
+        httpRequestDurationAvg,
+        httpRequestDurationMed,
+        httpRequestDurationMax,
+        httpRequestDurationMin,
+        httpRequestDurationP90,
+        httpRequestDurationP95
     });
 
 
-
     // prepare duration data
-    if(!loadTestData.labels){
-        loadTestData.labels=["average", "median", "max", "min", "p90", "p95"];
+    if (!loadTestData.labels) {
+        loadTestData.labels = ["average", "median", "max", "min", "p90", "p95"];
     }
 
-    if(!loadTestData.datasets){
-        loadTestData.datasets=[];
+    if (!loadTestData.datasets) {
+        loadTestData.datasets = [];
     }
-    loadTestData.datasets[loadTestData.datasets.length]= {
+    loadTestData.datasets[loadTestData.datasets.length] = {
         label: prefix,
         data: [httpRequestDurationAvg, httpRequestDurationMed, httpRequestDurationMax, httpRequestDurationMin, httpRequestDurationP90, httpRequestDurationP95]
     };
 
 
-
 }
 
-function unifyValues(values){
+function unifyValues(values) {
     const result = [];
     var min = Math.min(...values.map(item => item[0]));
     values.map(item => {
@@ -153,7 +156,7 @@ function unifyValues(values){
 }
 
 
-function unifyValuesMemory(values){
+function unifyValuesMemory(values) {
     const result = [];
     var min = Math.min(...values.map(item => item[0]));
     values.map(item => {
@@ -167,16 +170,16 @@ function unifyValuesMemory(values){
 
 }
 
-function prepareMemData(prefix, perfData){
+function prepareMemData(prefix, perfData) {
     const values = perfData.data.result[0].values;
     let unifiedVal = unifyValuesMemory(values);
 
-    if(!memDataSet.labels){
-        memDataSet.labels=[];
+    if (!memDataSet.labels) {
+        memDataSet.labels = [];
     }
 
-    if(!memDataSet.datasets){
-        memDataSet.datasets=[];
+    if (!memDataSet.datasets) {
+        memDataSet.datasets = [];
     }
 
     memDataSet.labels.push(prefix);
@@ -189,16 +192,16 @@ function prepareMemData(prefix, perfData){
 
 }
 
-function prepareCpuData(prefix, perfData){
+function prepareCpuData(prefix, perfData) {
     const values = perfData.data.result[0].values;
     let unifiedVal = unifyValues(values);
 
-    if(!cpuDataSet.labels){
-        cpuDataSet.labels=[];
+    if (!cpuDataSet.labels) {
+        cpuDataSet.labels = [];
     }
 
-    if(!cpuDataSet.datasets){
-        cpuDataSet.datasets=[];
+    if (!cpuDataSet.datasets) {
+        cpuDataSet.datasets = [];
     }
 
     cpuDataSet.labels.push(prefix);
@@ -209,28 +212,61 @@ function prepareCpuData(prefix, perfData){
         });
 }
 
+const buildTable = async () => {
 
-async function buildRequestCountTable() {
-    console.log("requestCountTableData", requestCountTableData)
-    requestCountTableData.sort((a, b) => (b.totalRequests) - (a.totalRequests));
-    console.log("sorted-requestCountTableData", requestCountTableData)
-    const table = document.getElementById("request_count_table");
-    var rowCount = table.rows.length;
-    var tableHeaderRowCount = 1;
-    for (var i = tableHeaderRowCount; i < rowCount; i++) {
-        table.deleteRow(tableHeaderRowCount);
+    const tableRows = []
+
+    const tableColumns = [
+        {headerName: 'Service', field: 'service'},
+        {headerName: '# Successful Requests', field: 'successfulRequests', type: 'numberColumn'},
+        {headerName: '# Failed Requests', field: 'failedRequests', type: 'numberColumn'},
+    ]
+
+    requestCountTableData.forEach(countItem => (
+        tableRows.push({
+            service: countItem.name,
+            successfulRequests: countItem.totalRequests,
+            failedRequests: countItem.failedRequests,
+        })
+    ));
+
+    const defaultColDef = {
+        width: 100,
+        sortable: true,
+        filter: 'agTextColumnFilter',
+        resizable: true,
+        wrapHeaderText: true,
+        autoHeaderHeight: true,
     }
 
+    const defaultColGroupDef = {
+        marryChildren: true,
+    }
 
-    requestCountTableData.map(item => {
-        const row = table.insertRow();
-        const name = row.insertCell(0);
-        const totalRequests = row.insertCell(1);
-        const failedRequests = row.insertCell(2);
-        name.innerHTML = item.name;
-        totalRequests.innerHTML = item.totalRequests;
-        failedRequests.innerHTML = item.failedRequests;
-    });
+    const columnTypes = {
+        numberColumn: {
+            width: 100,
+            filter: 'agNumberColumnFilter',
+            filterParams: {
+                comparator: (filterValue, cellValue) => {
+                    if (cellValue < filterValue) {
+                        return -1;
+                    }
+                }
+            }
+        }
+    }
+
+    let gridOptions = {
+        columnDefs: tableColumns,
+        rowData: tableRows,
+        defaultColDef,
+        defaultColGroupDef,
+        columnTypes
+    }
+
+    let gridDiv = document.querySelector('#myGrid');
+    new Grid(gridDiv, gridOptions);
 }
 
 async function loadServiceData(prefix, serviceReports) {
@@ -249,52 +285,42 @@ async function loadServiceData(prefix, serviceReports) {
         fetch(buildDurationPath),
         fetch(startupDurationPath),
     ]);
-    // const loadTestHtmlFetched = await fetch(loadTestHtml)
-    //     .then(res => res.url)
-    const [loadTestResults, containerImageSize, perfCPU, perfMem, buildDuration, startupDuration] = await Promise.all(responsesJSON.map(r => r.json()));
-    // console.log("--------------------------------------------------------------------------------")
-    // console.log("loadtest", loadTestResults);
-    // console.log("containerImages", containerImageSize);
-    // console.log('cpu', perfCPU);
-    // console.log('mem', perfMem);
-    // console.log('buildDuration', buildDuration);
-    // console.log("--------------------------------------------------------------------------------")
-    // await getFailedRequestsWithCallback(loadTestHtml, loadTestHtmlFetched, prefix, addHtmlFilesAndButtons)
+    const results = await Promise.allSettled(responsesJSON.map(r => r.json()));
 
-    prepareLoadTestData(prefix, loadTestResults);
+    const [ loadTestResults, containerImageSize, perfCPU, perfMem, buildDuration, startupDuration] = results.filter(result => !(result.status === 'rejected'))
 
-    prepareContainerImageSizesData(prefix, containerImageSize);
-    prepareCpuData(prefix,perfCPU);
-    prepareMemData(prefix,perfMem);
-    prepareBuildDurationData(prefix, buildDuration);
-    prepareStartupDurationData(prefix, startupDuration);
+    loadTestResults && prepareLoadTestData(prefix, loadTestResults.value);
 
-
-
+    containerImageSize && prepareContainerImageSizesData(prefix, containerImageSize.value);
+    perfCPU && prepareCpuData(prefix, perfCPU.value);
+    perfMem && prepareMemData(prefix, perfMem.value);
+    buildDuration && prepareBuildDurationData(prefix, buildDuration.value);
+    startupDuration && prepareStartupDurationData(prefix, startupDuration.value);
 
 }
 
-
-
-async function prepareChartData(){
+async function prepareChartData() {
     for (const key in reportFiles) {
 
         const serviceReports = reportFiles[key];
         await loadServiceData(key, serviceReports)
     }
 
-    await buildRequestCountTable();
+    await buildTable();
 }
 
 var requestDurationChart;
 
-(async function() {
+(async function () {
 
     await prepareChartData();
 
     console.log("start drawing charts");
     // container sizes
     console.log("image sizes", imageSizeData)
+    if (!imageSizeData) {
+        console.log("imageSizeData missing or error")
+    }
     new Chart(
         document.getElementById('container_image_size'),
         {
@@ -331,6 +357,9 @@ var requestDurationChart;
     );
 
     // startup duration
+    if (!startupDurationData) {
+        console.log("startupDurationData missing or error")
+    }
     console.log("startup-duration-data", startupDurationData)
     new Chart(
         document.getElementById('startup_duration_chart'),
@@ -374,6 +403,9 @@ var requestDurationChart;
 
     //build duration
     console.log("build-duration-data", buildDurationData)
+    if (!buildDurationData) {
+        console.log("buildDurationData missing or error")
+    }
     new Chart(
         document.getElementById('build_duration_chart'),
         {
@@ -415,6 +447,9 @@ var requestDurationChart;
         });
 
     // request count chart
+    if (!requestCountData) {
+        console.log("requestCounTdata missing or error")
+    }
     console.log("request_count-data", requestCountData)
     new Chart(
         document.getElementById('request_count_chart'),
@@ -460,49 +495,52 @@ var requestDurationChart;
 
     // request duration charts
     console.log("request_duration-data", loadTestData)
+    if (!loadTestData) {
+        console.log("loadTestData missing or error")
+    }
     requestDurationChart = new Chart(
         document.getElementById('http_req_duration'),
         {
             type: 'bar',
             options: {
-              responsive: true,
-              categoryPercentage: 0.8,
-              barPercentage: 0.8,
-              plugins: {
-                  beforeInit: function(chart, options) {
-                      chart.legend.afterFit = function() {
-                          this.height = this.height + 50;
-                      };
-                  },
-                  legend: {
-                      display: true,
-                      position: "right",
-                      fullWidth: true,
+                responsive: true,
+                categoryPercentage: 0.8,
+                barPercentage: 0.8,
+                plugins: {
+                    beforeInit: function (chart, options) {
+                        chart.legend.afterFit = function () {
+                            this.height = this.height + 50;
+                        };
+                    },
+                    legend: {
+                        display: true,
+                        position: "right",
+                        fullWidth: true,
 
-                  },
-                  title: {
-                      display: true,
-                      text: "Http Request Duration Avg (ms) - log scale"
-                  },
-              },
-              scales: {
-                  x: {
-                      type: 'category',
-                      labels: loadTestData.labels,
-                      title: {
-                          display: true,
-                          text: 'Durations',
-                      },
-                  },
-                  y: {
-                      display: true,
-                      type: 'logarithmic',
-                      title: {
-                          display: true,
-                          text: 'Time in ms',
-                      },
-                  }
-              },
+                    },
+                    title: {
+                        display: true,
+                        text: "Http Request Duration Avg (ms) - log scale"
+                    },
+                },
+                scales: {
+                    x: {
+                        type: 'category',
+                        labels: loadTestData.labels,
+                        title: {
+                            display: true,
+                            text: 'Durations',
+                        },
+                    },
+                    y: {
+                        display: true,
+                        type: 'logarithmic',
+                        title: {
+                            display: true,
+                            text: 'Time in ms',
+                        },
+                    }
+                },
             },
             data: loadTestData,
 
@@ -512,6 +550,9 @@ var requestDurationChart;
 
     // resource data
     // cpu - loadtest results
+    if (!cpuDataSet) {
+        console.log("cpuDataSet missing or error")
+    }
     console.log("cpu_data", cpuDataSet);
     new Chart(
         document.getElementById('perf_cpu'),
@@ -550,42 +591,45 @@ var requestDurationChart;
     );
 
 
-
     console.log("memDataSet", memDataSet);
-    new Chart(
-        document.getElementById('perf_mem'),
-        {
-            type: 'line',
-            options: {
-                parsing: {
-                    xAxisKey: 'x',
-                    yAxisKey: 'y'
-                },
-                plugins: {
-                    legend: true,
-                    title: {
-                        display: true,
-                        text: "Memory Usage"
+    if (!memDataSet) {
+        console.log("memDataSet missing or error")
+    } else {
+        new Chart(
+            document.getElementById('perf_mem'),
+            {
+                type: 'line',
+                options: {
+                    parsing: {
+                        xAxisKey: 'x',
+                        yAxisKey: 'y'
                     },
-                },
-                scales: {
-                    x: {
-                        type: 'linear',
+                    plugins: {
+                        legend: true,
                         title: {
                             display: true,
-                            text: 'Time in seconds',
+                            text: "Memory Usage"
                         },
                     },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Memory Usage in MB',
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Time in seconds',
+                            },
                         },
-                    }
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Memory Usage in MB',
+                            },
+                        }
+                    },
                 },
-            },
-            data: memDataSet,
-        }
-    );
+                data: memDataSet,
+            }
+        );
+    }
 
 })();

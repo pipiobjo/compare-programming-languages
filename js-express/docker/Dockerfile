@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:alpine as builder
 
 COPY src /app
 
@@ -6,7 +6,9 @@ WORKDIR /app
 
 RUN npm install
 
-COPY . .
+FROM node:alpine as app
+
+COPY --from=builder app .
 
 EXPOSE 8080
 

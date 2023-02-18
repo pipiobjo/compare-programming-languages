@@ -1,0 +1,18 @@
+# Golang with chi
+
+https://github.com/go-chi/chi
+
+openapi format - still not supported
+https://github.com/go-chi/docgen/issues/1
+maybe solveable with https://github.com/swaggo/http-swagger
+
+
+## reading configuration via golang tags
+implemented via https://github.com/joeshaw/envdecode
+
+https://medium.com/golangspec/tags-in-golang-3e5db0b8ef3e
+[,golang]
+----
+include::app/config/config.go[lines=13..20]
+----
+

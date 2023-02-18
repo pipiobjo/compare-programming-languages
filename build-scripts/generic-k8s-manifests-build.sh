@@ -24,6 +24,29 @@ source "$K8S_PLAYGROUND_DIR/kind/shell-based-setup/k8s/scripts/define-colors.sh"
 SERVICE_FOLDER=
 DOCKER_FILE=
 DOCKER_IMAGE_NAME=
+LOCAL_HTTP_PORT=9186
+KUBECTL_PID=
+
+###
+### functions
+###
+
+function startPortForward() {
+  echo "kubectl port-forward ${POD_NAME} $LOCAL_HTTP_PORT:8080"
+  kubectl port-forward "${POD_NAME}" $LOCAL_HTTP_PORT:8080 &
+  KUBECTL_PID=$!
+  echo "KUBECTL_PID: ${KUBECTL_PID}"
+
+}
+
+function stopPortForward() {
+  echo "KUBECTL_PID: ${KUBECTL_PID}"
+  if [ -n "$KUBECTL_PID" ]; then
+    echo "kill ${KUBECTL_PID}"
+    kill ${KUBECTL_PID}
+  fi
+}
+
 
 ###
 ### parse parameters
@@ -192,36 +215,49 @@ sleep 3s
 START=$(date +%s)
 kubectl apply -f $TEMP_FILE
 
-kubectl wait --for=condition=ready pod -l app=${REPORT_NAME} --timeout=60s
-LOCAL_HTTP_PORT=9180
-kubectl port-forward deployment/${REPORT_NAME} $LOCAL_HTTP_PORT:8080 &
-KUBECTL_PID=$!
-echo "KUBECTL_PID: ${KUBECTL_PID}"
+sleep 1s
+POD_NAME=$(kubectl get pods -l="app=java-springboot" -o json | jq -r '.items[0].metadata.name')
+echo "POD_NAME: ${POD_NAME}"
+kubectl wait --for=jsonpath='{.status.phase}'=Running "pod/${POD_NAME}" --timeout=60s
+
+startPortForward
 
 sleep 1
 
 # kill the port-forward regardless of how this script exits
 trap '{
-    echo killing kubectl port-forward: $KUBECTL_PID
-    kill $KUBECTL_PID
+    stopPortForward
 }' EXIT
 
 
 BASE_URL="http://localhost:${LOCAL_HTTP_PORT}"
 
 ENDPOINT_URL="${BASE_URL}/api/user/"
-# curl endpioint
-echo -e "\n${GREEN}curl ${ENDPOINT_URL}${NO_COLOR}"
-curl --head -X GET --retry 500 --retry-all-errors --retry-delay 1 "${ENDPOINT_URL}"
+while [ "$STATUS_CODE" != "200" ];
+do
+  STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" --head -X GET --retry 2 --retry-all-errors --retry-delay 1 "${ENDPOINT_URL}")
+  echo -e "${RED}STATUS_CODE: \"${STATUS_CODE}\"${NO_COLOR}"
+
+  if [ "$STATUS_CODE" != "200" ]; then
+    stopPortForward
+    sleep 1
+    startPortForward
+    sleep 1
+  fi
+done
+
 
 END=$(date +%s)
 DIFF=$(( $END - $START ))
 
 echo -e "${BLUE}Startup Time: ${DIFF}${NO_COLOR} "
-
-BUILD_REPORT_FIle="${SCRIPT_DIR}/../report/dist/reports/${REPORT_NAME}/startup-time.json"
-echo -e "${GREEN}Writing startupTime to reportfile: ${BUILD_REPORT_FIle}${NO_COLOR} "
-echo "{\"startup_time_in_seconds\": $DIFF}" > $BUILD_REPORT_FIle
+BUILD_REPORT_DIR="${SCRIPT_DIR}/../report/dist/reports/${REPORT_NAME}"
+mkdir -p "${BUILD_REPORT_DIR}"
+BUILD_REPORT_FILE="${BUILD_REPORT_DIR}/startup-time.json"
+touch "${BUILD_REPORT_FILE}"
+echo -e "${GREEN}Writing startupTime to reportfile: ${BUILD_REPORT_FILE}${NO_COLOR} "
+echo "{\"startup_time_in_seconds\": $DIFF}" > "$BUILD_REPORT_FILE"
+cat "$BUILD_REPORT_FILE"
 
 
 

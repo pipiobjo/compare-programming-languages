@@ -84,6 +84,7 @@ function prepareBuildDurationData(prefix, buildDuration) {
 }
 
 function prepareLoadTestData(prefix, loadTestResults){
+    console.log("prepare-loadtest-data-"+prefix, loadTestResults);
     const httpRequestDurationAvg = loadTestResults.metrics["http_req_duration"].values.avg;
     const httpRequestDurationMax = loadTestResults.metrics["http_req_duration"].values.max;
     const httpRequestDurationMed = loadTestResults.metrics["http_req_duration"].values.med;
@@ -252,14 +253,13 @@ async function loadServiceData(prefix, serviceReports) {
     // const loadTestHtmlFetched = await fetch(loadTestHtml)
     //     .then(res => res.url)
     const [loadTestResults, containerImageSize, perfCPU, perfMem, buildDuration, startupDuration] = await Promise.all(responsesJSON.map(r => r.json()));
-    // console.log("--------------------------------------------------------------------------------")
-    // console.log("loadtest", loadTestResults);
-    // console.log("containerImages", containerImageSize);
-    // console.log('cpu', perfCPU);
-    // console.log('mem', perfMem);
-    // console.log('buildDuration', buildDuration);
-    // console.log("--------------------------------------------------------------------------------")
-    // await getFailedRequestsWithCallback(loadTestHtml, loadTestHtmlFetched, prefix, addHtmlFilesAndButtons)
+    console.log("--------------------------------------------------------------------------------")
+    console.log("loadtest", loadTestResults);
+    console.log("containerImages", containerImageSize);
+    console.log('cpu', perfCPU);
+    console.log('mem', perfMem);
+    console.log('buildDuration', buildDuration);
+    console.log("--------------------------------------------------------------------------------")
 
     prepareLoadTestData(prefix, loadTestResults);
 
@@ -277,12 +277,15 @@ async function loadServiceData(prefix, serviceReports) {
 
 
 async function prepareChartData(){
+    console.log("reportFiles", reportFiles);
     for (const key in reportFiles) {
 
         const serviceReports = reportFiles[key];
+        console.log("loading serviceReports for " + key, serviceReports);
         await loadServiceData(key, serviceReports)
     }
 
+    console.log("build request count table");
     await buildRequestCountTable();
 }
 

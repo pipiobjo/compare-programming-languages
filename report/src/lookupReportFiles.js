@@ -4,14 +4,13 @@ const path = require("path");
 
 
 
-glob('./dist/reports/**/*.{json,html}', (err, files) => {
+glob('./dist/reports/**/*.json', (err, files) => {
     if (err) {
         return console.error(err)
     }
 
     // Print all files
     console.log(files)
-    // ['api/http.ts', 'api/routes.ts', 'api/models/user.ts']
 
     // Iterate over all files
     let resultJSON = {};

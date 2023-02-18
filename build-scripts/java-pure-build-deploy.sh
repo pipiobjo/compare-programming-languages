@@ -11,9 +11,11 @@ SERVICE_DOCKER_FILE="${SERVICE_FOLDER}/docker/openjdk/Dockerfile"
 . ${SCRIPT_DIR}/generic-docker-build.sh \
   --docker-context-folder ${SERVICE_DOCKER_BUILD_CONTEXT} \
   --dockerfile ${SERVICE_DOCKER_FILE} \
-  --dockerImageName ${SERVICE_FOLDER_NAME}
+  --dockerImageName ${SERVICE_FOLDER_NAME} \
+  --reportName ${SERVICE_FOLDER_NAME}
 
-. ${SCRIPT_DIR}/generic-k8s-kustomize-build.sh \
+. ${SCRIPT_DIR}/generic-k8s-manifests-build.sh \
   --serviceFolder "${SERVICE_FOLDER}" \
-  --dockerImageName "${GENERATED_IMAGE}"
+  --dockerImageName "${GENERATED_IMAGE}" \
+  --reportName ${SERVICE_FOLDER_NAME}
 

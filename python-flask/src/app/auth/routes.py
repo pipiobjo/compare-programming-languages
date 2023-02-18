@@ -1,8 +1,5 @@
 import uuid
 from flask import request, make_response, jsonify
-import numpy
-
-import array as arr
 from app.models import User
 from auth import auth_bp
 from auth.constants import application_json

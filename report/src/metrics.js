@@ -1,5 +1,6 @@
 import Chart from 'chart.js/auto';
 import {Grid} from 'ag-grid-community';
+import {getRelativePosition} from 'chart.js/helpers';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
@@ -13,6 +14,7 @@ const startupDurationData = {};
 const imageSizeData = {};
 const cpuDataSet = {};
 const memDataSet = {};
+let requestCountTable;
 
 
 function formatBytes(bytes, decimals = 2) {
@@ -214,47 +216,49 @@ function prepareCpuData(prefix, perfData) {
 
 const buildTable = async () => {
 
-    const tableRows = []
-
     const tableColumns = [
         {
             headerName: 'Service',
             field: 'service',
+            maxWidth: 110
         },
         {
-            headerName: '# Successful Requests',
+            headerName: 'Successful',
             field: 'successfulRequests',
             type: 'numberColumn',
             initialSort: 'desc',
             cellStyle: {
                 'text-align': 'right',
             },
+            flex: 1
         },
         {
-            headerName: '# Failed Requests',
+            headerName: 'Failed',
             field: 'failedRequests',
             type: 'numberColumn',
             cellStyle: {
                 'text-align': 'right'
-            }
+            },
+            flex: 1,
+            maxWidth: 110
         },
     ]
 
-    requestCountTableData.forEach(countItem => (
-        tableRows.push({
+    const tableRows = requestCountTableData.map(countItem => (
+        {
             service: countItem.name,
             successfulRequests: countItem.totalRequests,
             failedRequests: countItem.failedRequests,
-        })
+        }
     ));
 
     const defaultColDef = {
-        width: 110,
         sortable: true,
         filter: 'agTextColumnFilter',
         resizable: true,
         autoHeaderHeight: true,
         wrapHeaderText: true,
+        autoSizeColumns: true,
     }
 
     const defaultColGroupDef = {
@@ -263,21 +267,28 @@ const buildTable = async () => {
 
     const columnTypes = {
         numberColumn: {
-            width: 120,
             filter: 'agNumberColumnFilter',
         }
     }
 
+    const getRowClass = (params) => {
+        return `request-count-${params.data.service}`;
+    }
+
+
     let gridOptions = {
         columnDefs: tableColumns,
         rowData: tableRows,
+        rowClass: 'requestCountRow',
+        animatedRows: true,
+        getRowClass,
         defaultColDef,
         defaultColGroupDef,
-        columnTypes
+        columnTypes,
     }
 
     let gridDiv = document.querySelector('#myGrid');
-    new Grid(gridDiv, gridOptions);
+    requestCountTable = new Grid(gridDiv, gridOptions);
 }
 
 async function loadServiceData(prefix, serviceReports) {
@@ -298,7 +309,7 @@ async function loadServiceData(prefix, serviceReports) {
     ]);
     const results = await Promise.allSettled(responsesJSON.map(r => r.json()));
 
-    const [ loadTestResults, containerImageSize, perfCPU, perfMem, buildDuration, startupDuration] = results.filter(result => !(result.status === 'rejected'))
+    const [loadTestResults, containerImageSize, perfCPU, perfMem, buildDuration, startupDuration] = results.filter(result => !(result.status === 'rejected'))
 
     loadTestResults && prepareLoadTestData(prefix, loadTestResults.value);
 
@@ -317,7 +328,16 @@ async function prepareChartData() {
         await loadServiceData(key, serviceReports)
     }
 
+    initEventListeners();
     await buildTable();
+}
+
+const initEventListeners = () => {
+    const requestCountCanvas = document.getElementById('request_count_chart');
+    requestCountCanvas && requestCountCanvas.addEventListener("mouseout", () => {
+        const requestCountRows = Array.from(document.getElementsByClassName('requestCountRow'));
+        requestCountRows.forEach(row => row.classList.remove("active"));
+    })
 }
 
 var requestDurationChart;
@@ -459,29 +479,61 @@ var requestDurationChart;
 
     // request count chart
     if (!requestCountData) {
-        console.log("requestCounTdata missing or error")
+        console.log("requestCountData missing or error")
     }
     console.log("request_count-data", requestCountData)
-    new Chart(
+
+    const requestCountChart = new Chart(
         document.getElementById('request_count_chart'),
         {
             type: 'bar',
             data: requestCountData,
             options: {
+                maintainAspectRatio: false,
                 responsive: true,
                 barValueSpacing: 2,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: "Http Request Counts - log scale"
-                    },
-                    legend: {
-                        display: true,
-                        position: "top",
-                        fullWidth: true,
-
+                onHover: (event) => {
+                    try {
+                        const position = getRelativePosition(event, requestCountChart);
+                        const dataX = requestCountChart.scales.x.getValueForPixel(position.x);
+                        const label = requestCountData.labels[dataX];
+                        const requestCountRows = Array.from(document.getElementsByClassName('requestCountRow'));
+                        const {
+                            bottom,
+                            top,
+                            right,
+                            left
+                        } = requestCountChart.chartArea;
+                        if (event.x >= left && event.x <= right && event.y <= bottom && event.y >= top) {
+                            requestCountRows.forEach(row => {
+                                if (row.classList.contains(`request-count-${label}`)) {
+                                    row.classList.add("active")
+                                } else {
+                                    row.classList.remove("active")
+                                }
+                            })
+                        } else {
+                            requestCountRows.forEach(row => row.classList.remove("active"))
+                        }
+                    } catch (e) {
+                        console.log("caught exception while applying table effects", e)
                     }
                 },
+                plugins: [
+                    {
+                        title: {
+                            display: true,
+                            text: "Http Request Counts - log scale"
+                        },
+                        legend: {
+                            display: true,
+                            position: "top",
+                            fullWidth: true,
+                            maxHeight: 30
+
+                        }
+                    }
+                ],
                 scales: {
                     x: {
                         display: true,

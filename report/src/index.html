@@ -2,51 +2,78 @@
 <html lang="en">
 <head>
     <title>Chart.js example</title>
+    <style>
+        .canvas-container {
+            display: grid;
+            grid-auto-rows: 1fr;
+        }
+
+        .canvas-container > div {
+            flex: 1 1 0;
+        }
+
+        .ag-theme-alpine {
+            --ag-grid-size: 5px;
+            --ag-list-item-height: 2rem;
+            --ag-header-height: 3rem;
+            --ag-row-height: 2rem;
+            --ag-header-column-separator-display: none;
+        }
+
+        .ag-theme-alpine .ag-header-cell-text {
+            font-size: 1rem;
+        }
+
+        .active {
+            background-color: #6FADE8 !important;
+            transition: color 1s;
+        }
+    </style>
 </head>
 <body>
 
-<div style="width: 60%;">
-    <h2>Build Duration</h2>
-    <canvas id="build_duration_chart"></canvas>
-</div>
+<div class="canvas-container">
+    <div style="width: 60%;">
+        <h2>Build Duration</h2>
+        <canvas id="build_duration_chart"></canvas>
+    </div>
 
-<div style="width: 60%">
-    <h2>Startup Duration</h2>
-    <canvas id="startup_duration_chart"></canvas>
-</div>
+    <div style="width: 60%">
+        <h2>Startup Duration</h2>
+        <canvas id="startup_duration_chart"></canvas>
+    </div>
 
-<div style="width: 60%;">
-    <h2>Container Image Sizes</h2>
-    <canvas id="container_image_size"></canvas>
-</div>
+    <div style="width: 60%;">
+        <h2>Container Image Sizes</h2>
+        <canvas id="container_image_size"></canvas>
+    </div>
 
-<div style="width: 70%">
-    <h2>Request Count</h2>
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-        <canvas id="request_count_chart" style=""></canvas>
-        <div id="myGrid" style="height: 32rem; min-width: 400px; margin-top: 1rem;" class="ag-theme-alpine"></div>
+    <div style="width: 100%; flex: 1 1 auto">
+        <h2>Request Count</h2>
+        <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-between; width: 100%; height: 90%">
+            <div style="width: 100%; height: 100%">
+                <canvas id="request_count_chart" style="width: 100%; max-height: 100%; min-height: 500px; padding: 1rem;"></canvas>
+            </div>
+            <div id="myGrid" style="min-width: 30%; height: 85%;" class="ag-theme-alpine"></div>
+        </div>
+    </div>
+
+    <div style="width: 80%;">
+        <h2>Request Duration</h2>
+        <canvas id="http_req_duration"></canvas>
+    </div>
+
+
+    <div style="width: 60%;">
+        <h2>CPU Performance Data</h2>
+        <canvas id="perf_cpu"></canvas>
+    </div>
+
+    <div style="width: 60%;">
+        <h2>Memory Performance Data</h2>
+        <canvas id="perf_mem"></canvas>
     </div>
 </div>
-
-<!--<div id="myGrid" style="width:350px; height: 76.7%; margin-top: 1.1%" class="ag-theme-alpine"></div>-->
-<div style="width: 80%;">
-    <h2>Request Duration</h2>
-
-    <canvas id="http_req_duration"></canvas>
-    <div id="http_req_duration_buttons"></div>
-</div>
-
-
-<div style="width: 60%;">
-    <h2>CPU Performance Data</h2>
-    <canvas id="perf_cpu"></canvas>
-</div>
-
-<div style="width: 60%;">
-    <h2>Memory Performance Data</h2>
-    <canvas id="perf_mem"></canvas>
-</div>
-
 <!-- <script type="module" src="dimensions.js"></script> -->
 <script type="module" src="metrics.js"></script>
 </body>

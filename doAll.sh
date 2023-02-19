@@ -2,14 +2,13 @@
 
 CURRENT_DIR=$(pwd)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/"
+
+${SCRIPT_DIR}/cleanup.sh
+
 BUILD_SCRIPTS="${SCRIPT_DIR}/build-scripts"
 K8S_PLAYGROUND_DIR="${SCRIPT_DIR}/../../k8s-playground/"
 source "$K8S_PLAYGROUND_DIR/kind/shell-based-setup/k8s/scripts/k8s-env.sh"
-# load colors
 source "$K8S_PLAYGROUND_DIR/kind/shell-based-setup/k8s/scripts/define-colors.sh"
-
-cd "${K8S_PLAYGROUND_DIR}"
-. ${K8S_PLAYGROUND_DIR}/kind/shell-based-setup/localK8s.sh
 
 cd ${CURRENT_DIR}
 

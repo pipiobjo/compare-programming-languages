@@ -32,6 +32,18 @@ KUBECTL_PID=
 ###
 
 function startPortForward() {
+  REPORT_NAME=$1
+  if [ -z "$REPORT_NAME" ]; then
+    echo -e "${RED}no report name given${NO_COLOR} "
+    exit 1
+  fi
+  echo "startPortForward for ${REPORT_NAME}"
+  POD_NAME=$(kubectl get pods -l="app=${REPORT_NAME}" -o json | jq -r '.items[0].metadata.name')
+  if [ -z "$POD_NAME" ]; then
+    echo -e "${RED}no pod found for ${REPORT_NAME}${NO_COLOR} "
+    exit 1
+  fi
+  echo "POD_NAME: ${POD_NAME}"
   echo "kubectl port-forward ${POD_NAME} $LOCAL_HTTP_PORT:8080"
   kubectl port-forward "${POD_NAME}" $LOCAL_HTTP_PORT:8080 &
   KUBECTL_PID=$!
@@ -42,8 +54,11 @@ function startPortForward() {
 function stopPortForward() {
   echo "KUBECTL_PID: ${KUBECTL_PID}"
   if [ -n "$KUBECTL_PID" ]; then
-    echo "kill ${KUBECTL_PID}"
-    kill ${KUBECTL_PID}
+    if ps -p $KUBECTL_PID > /dev/null
+        then
+          echo "found running port-forward process ${KUBECTL_PID} - kill it"
+          kill ${KUBECTL_PID}
+    fi
   fi
 }
 
@@ -106,7 +121,7 @@ fi
 ############################################################################################################
 ### build k8s manifests
 ############################################################################################################
-
+echo -e "\n${GREEN}${REPORT_NAME} - build k8s manifests${NO_COLOR} "
 echo -e "\nensure we using $KIND_CLUSTER_NAME k8s cluster"
 kubectl config use-context "kind-${KIND_CLUSTER_NAME}"
 
@@ -168,10 +183,10 @@ spec:
           resources:
             limits:
               cpu:    "500m"   # maximum amount of cpu in millicpu
-              memory: "200Mi"  # maximum amount of ram for the container
+              memory: "100Mi"  # maximum amount of ram for the container
             requests:
-              cpu:    "20m"   # minimum amount of cpu in millicpu
-              memory: "20Mi"  # minimum amount of ram
+              cpu:    "200m"   # minimum amount of cpu in millicpu
+              memory: "100Mi"  # minimum amount of ram
 ---
 apiVersion: v1
 kind: Service
@@ -210,19 +225,22 @@ EOF
 cat $TEMP_FILE
 kubectl delete -f $TEMP_FILE
 
-sleep 3s
+sleep "3s"
 
 START=$(date +%s)
 kubectl apply -f $TEMP_FILE
 
-sleep 1s
-POD_NAME=$(kubectl get pods -l="app=java-springboot" -o json | jq -r '.items[0].metadata.name')
-echo "POD_NAME: ${POD_NAME}"
+POD_NAME=
+while [ -z "$POD_NAME" ];
+do
+  POD_NAME=$(kubectl get pods -l="app=${REPORT_NAME}" -o json | jq -r '.items[0].metadata.name')
+done
+echo -e "${GREEN}POD_NAME: \"${POD_NAME}\"${NO_COLOR}"
 kubectl wait --for=jsonpath='{.status.phase}'=Running "pod/${POD_NAME}" --timeout=60s
 
-startPortForward
+startPortForward "${REPORT_NAME}"
 
-sleep 1
+sleep "1s"
 
 # kill the port-forward regardless of how this script exits
 trap '{
@@ -232,7 +250,7 @@ trap '{
 
 BASE_URL="http://localhost:${LOCAL_HTTP_PORT}"
 
-ENDPOINT_URL="${BASE_URL}/api/user/"
+ENDPOINT_URL="${BASE_URL}/api/user"
 while [ "$STATUS_CODE" != "200" ];
 do
   STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" --head -X GET --retry 2 --retry-all-errors --retry-delay 1 "${ENDPOINT_URL}")
@@ -241,7 +259,7 @@ do
   if [ "$STATUS_CODE" != "200" ]; then
     stopPortForward
     sleep 1
-    startPortForward
+    startPortForward "${REPORT_NAME}"
     sleep 1
   fi
 done

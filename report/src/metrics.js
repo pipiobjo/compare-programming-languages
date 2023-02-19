@@ -230,7 +230,9 @@ async function buildRequestCountTable() {
         const failedRequests = row.insertCell(2);
         name.innerHTML = item.name;
         totalRequests.innerHTML = item.totalRequests;
+        totalRequests.style.textAlign = "right";
         failedRequests.innerHTML = item.failedRequests;
+        failedRequests.style.textAlign = "right";
     });
 }
 

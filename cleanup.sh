@@ -12,8 +12,8 @@ source "$K8S_PLAYGROUND_DIR/kind/shell-based-setup/k8s/scripts/define-colors.sh"
 
 
 echo -e "${GREEN}cleanup docker images${NO_COLOR} "
-docker image prune -a
-docker system prune
+docker image prune -a -f
+docker system prune -f
 
 echo -e "${GREEN}cleanup k8s image registry${NO_COLOR} "
 

@@ -1,13 +1,14 @@
+use super::super::request_guards::greeting_request_guard::GreetingAuth;
 use super::super::AppState;
+
 use crate::models::greeting_message::GreetingMessage;
 use actix_web::{get, web, HttpResponse};
-use actix_web_httpauth::extractors::basic::BasicAuth;
 
 #[get("/api/greeting")]
-pub async fn get_greeting_message(auth: BasicAuth, data: web::Data<AppState>) -> HttpResponse {
+pub async fn get_greeting_message(auth: GreetingAuth, data: web::Data<AppState>) -> HttpResponse {
     let users = data.users.lock().unwrap();
     for user in &(*users) {
-        if user.login.eq(auth.user_id()) && user.password.eq(auth.password().unwrap_or_default()) {
+        if user.login.eq(&auth.username) {
             return HttpResponse::Ok().json(GreetingMessage::from(user));
         }
     }

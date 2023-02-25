@@ -10,3 +10,10 @@ rocket = { version = "0.5.0-rc.2", features = ["json"] }
 futures = "0.3"
 serde = { version = "1.0.152", features = ["derive"] }
 base64 = "0.13"
+
+[profile.release]
+opt-level = 'z'     # Optimize for size
+lto = true          # Enable link-time optimization
+codegen-units = 1   # Reduce number of codegen units to increase optimizations
+panic = 'abort'     # Abort on panic
+strip = true        # Strip symbols from binary*

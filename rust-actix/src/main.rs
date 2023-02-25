@@ -1,5 +1,4 @@
-use actix_cors::Cors;
-use actix_web::{http, web, App, HttpServer};
+use actix_web::{web, App, HttpServer};
 use futures::future;
 use rustactix::services::greeting::get_greeting_message;
 use rustactix::services::probes::{get_liveness, get_readiness, get_startup};
@@ -11,11 +10,7 @@ use rustactix::AppState;
 async fn main() -> std::io::Result<()> {
     let app_state = web::Data::new(AppState::new());
     let server1 = HttpServer::new(move || {
-        let cors = Cors::default()
-            .allowed_methods(vec!["GET", "POST"])
-            .allowed_header(http::header::CONTENT_TYPE);
         App::new()
-            .wrap(cors)
             .app_data(app_state.clone())
             .service(get_greeting_message)
             .service(get_version)
@@ -25,12 +20,7 @@ async fn main() -> std::io::Result<()> {
     .bind("0.0.0.0:8080")?
     .run();
     let server2 = HttpServer::new(|| {
-        let cors = Cors::default()
-            .allowed_methods(vec!["GET", "POST"])
-            .allowed_header(http::header::CONTENT_TYPE);
-
         App::new()
-            .wrap(cors)
             .service(get_liveness)
             .service(get_readiness)
             .service(get_startup)

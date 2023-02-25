@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 pub mod models;
+pub mod request_guards;
 pub mod services;
 use models::user::User;
 

@@ -5,7 +5,7 @@ use crate::models::greeting_message::GreetingMessage;
 use actix_web::{get, web, HttpResponse};
 
 #[get("/api/greeting")]
-pub async fn get_greeting_message(auth: GreetingAuth, data: web::Data<AppState>) -> HttpResponse {
+async fn get_greeting_message(auth: GreetingAuth, data: web::Data<AppState>) -> HttpResponse {
     let users = data.users.lock().unwrap();
     for user in &(*users) {
         if user.login.eq(&auth.username) {

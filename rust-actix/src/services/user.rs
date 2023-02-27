@@ -6,12 +6,12 @@ use actix_web::{get, post, web, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
-pub struct UserParams {
+struct UserParams {
     login: Option<String>,
 }
 
 #[post("/api/user")]
-pub async fn create_user(new_user: web::Json<NewUser>, data: web::Data<AppState>) -> HttpResponse {
+async fn create_user(new_user: web::Json<NewUser>, data: web::Data<AppState>) -> HttpResponse {
     let mut users = data.users.lock().unwrap();
     if users.iter().any(|user| user.login.eq(&new_user.login)) {
         return HttpResponse::BadRequest().body("user already exists".to_string());
@@ -23,7 +23,7 @@ pub async fn create_user(new_user: web::Json<NewUser>, data: web::Data<AppState>
 }
 
 #[get("/api/user")]
-pub async fn get_users(params: web::Query<UserParams>, data: web::Data<AppState>) -> HttpResponse {
+async fn get_users(params: web::Query<UserParams>, data: web::Data<AppState>) -> HttpResponse {
     let users = data.users.lock().unwrap();
     if params.login.is_some() {
         return return_this_user(&params.login.as_ref().unwrap(), &(*users));

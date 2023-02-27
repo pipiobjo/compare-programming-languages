@@ -6,11 +6,11 @@ async fn get_startup() -> HttpResponse {
 }
 
 #[get("/ops/ready")]
-pub async fn get_readiness() -> HttpResponse {
+async fn get_readiness() -> HttpResponse {
     HttpResponse::Ok().body("{\"ok\":true}")
 }
 
 #[get("/ops/live")]
-pub async fn get_liveness() -> HttpResponse {
+async fn get_liveness() -> HttpResponse {
     HttpResponse::Ok().body("{\"ok\":true}")
 }

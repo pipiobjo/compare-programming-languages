@@ -21,3 +21,4 @@ panic = 'abort'     # Abort on panic
 strip = true        # Strip symbols from binary*
 ```
 
+With these properties the docker image size reduce from 11.7 to 2.57

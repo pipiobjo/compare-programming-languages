@@ -5,7 +5,7 @@ use rocket::http::Status;
 use rocket::outcome::Outcome;
 use rocket::request::{self, FromRequest, Request};
 
-// https://github.com/Owez/rocket-basicauth
+// source: https://github.com/Owez/rocket-basicauth
 
 /// Decodes a base64-encoded string into a tuple of `(username, password)` or a
 /// [Option::None] if badly formatted, e.g. if an error occurs
@@ -25,7 +25,7 @@ fn decode_to_creds<T: Into<String>>(base64_encoded: T) -> Option<(String, String
 impl GreetingAuth {
     /// Creates a new [BasicAuth] struct/request guard from a given plaintext
     /// http auth header or returns a [Option::None] if invalid
-    pub fn new<T: Into<String>>(auth_header: T) -> Option<Self> {
+    fn new<T: Into<String>>(auth_header: T) -> Option<Self> {
         let key = auth_header.into();
 
         if key.len() < 7 || &key[..6] != "Basic " {

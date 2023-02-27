@@ -1,1 +1,1 @@
-pub mod greeting_request_guard;
+pub(crate) mod greeting_request_guard;

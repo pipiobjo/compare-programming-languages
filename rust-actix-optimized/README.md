@@ -31,3 +31,7 @@ Docker image size with all these properties except:
   - codegen-units: **2.62 mb**
   - panic: **2.81 mb**
   - strip: **4.9 mb**
+
+
+<br><br>
+## [Rust profile settings](https://doc.rust-lang.org/cargo/reference/profiles.html#profile-settings)

@@ -21,4 +21,13 @@ panic = 'abort'     # Abort on panic
 strip = true        # Strip symbols from binary*
 ```
 
-With these properties the docker image size reduce from 11.7 to 2.57
+Docker image size without any property: **11.7 mb**
+
+Docker image size with all these properties: **2.57 mb**
+
+Docker image size with all these properties except:
+  - opt-level: **3.24 mb**
+  - lto: **3.41 mb**
+  - codegen-units: **2.62 mb**
+  - panic: **2.81 mb**
+  - strip: **4.9 mb**

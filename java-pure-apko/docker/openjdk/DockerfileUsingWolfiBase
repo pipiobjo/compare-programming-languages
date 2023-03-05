@@ -1,10 +1,4 @@
 FROM maven:3.8.5-openjdk-17 as builder
-#FROM alpine:latest as builder
-#RUN apk add --no-cache binutils
-
-#ADD https://download.java.net/java/early_access/alpine/15/binaries/openjdk-14-ea+15_linux-x64-musl_bin.tar.gz /opt/jdk/
-#RUN tar -xzvf /opt/jdk/openjdk-14-ea+15_linux-x64-musl_bin.tar.gz -C /opt/jdk/
-
 
 
 COPY src /home/app/src
@@ -26,24 +20,7 @@ RUN MODULES="$(jdeps --list-deps --ignore-missing-deps /home/app/target/java-pur
 
 
 
-FROM my-java-base:latest
-#FROM bitnami/minideb:bullseye
-#FROM cgr.dev/chainguard/glibc-dynamic:latest
-#FROM cgr.dev/chainguard/gcc-glibc:latest
-#FROM cgr.dev/chainguard/gcc-musl:latest
-
-
-
-
-#RUN  apk update \
-#  && apk upgrade \
-#  && apk add ca-certificates \
-#  && update-ca-certificates \
-#  && apk add --update coreutils && rm -rf /var/cache/apk/*   \
-#  && apk add --update tzdata curl unzip bash \
-#  && apk add --no-cache nss \
-#  && rm -rf /var/cache/apk/*
-#
+FROM my-java-base:latest-amd64
 
 
 #RUN apk update && apk upgrade && apk add --no-cache java-cacerts bash

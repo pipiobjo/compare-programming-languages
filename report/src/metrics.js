@@ -229,9 +229,20 @@ async function buildRequestCountTable() {
         const totalRequests = row.insertCell(1);
         const failedRequests = row.insertCell(2);
         name.innerHTML = item.name;
-        totalRequests.innerHTML = item.totalRequests;
+        var totalRequestsValue = (item.totalRequests).toLocaleString(
+            undefined, // leave undefined to use the visitor's browser
+            // locale or a string like 'en-US' to override it.
+            { minimumFractionDigits: 2 }
+        );
+        totalRequests.innerHTML = totalRequestsValue;
         totalRequests.style.textAlign = "right";
-        failedRequests.innerHTML = item.failedRequests;
+
+        var failedRequestsValue = (item.failedRequests).toLocaleString(
+            undefined, // leave undefined to use the visitor's browser
+            // locale or a string like 'en-US' to override it.
+            { minimumFractionDigits: 2 }
+        );
+        failedRequests.innerHTML = failedRequestsValue;
         failedRequests.style.textAlign = "right";
     });
 }
@@ -432,7 +443,7 @@ var requestDurationChart;
                 plugins: {
                     title: {
                         display: true,
-                        text: "Http Request Counts - log scale"
+                        text: "Http Request Counts"
                     },
                     legend: {
                         display: true,

@@ -1,18 +1,39 @@
-# start by pulling the python image
-FROM python:3.10.6-alpine
+# base image
+FROM python:3.12.0a4-alpine3.17 AS compile-image
 
-# copy the requirements file into the image
-COPY src /app
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN mkdir wheels
+
+
+# add and install requirements
+RUN pip install --upgrade pip && pip install pip-tools && pip install wheel
+COPY src/app/requirements.txt .
+RUN pip wheel -r requirements.txt --wheel-dir=/wheels
+
+
+FROM python:3.12.0a4-alpine3.17 AS runtime-image
+
+RUN mkdir wheels
+
+# copy Python dependencies from build image
+COPY --from=compile-image /wheels /wheels
 
 # switch working directory
 WORKDIR /app
 
-# install the dependencies and packages in the requirements file
-RUN pip install -r app/requirements.txt
+COPY src/app /app
 
-RUN apk add --no-cache bash
-RUN apk --no-cache add curl
-RUN chmod +x app/boot.sh
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV PATH="/opt/venv/bin:/app:$PATH"
+
+RUN pip install --no-index --find-links=/wheels -r requirements.txt
+
+RUN chmod +x /app/boot.sh
 
 # configure the container to run in an executed manner
-ENTRYPOINT [ "app/boot.sh" ]
+ENTRYPOINT [ "boot.sh" ]

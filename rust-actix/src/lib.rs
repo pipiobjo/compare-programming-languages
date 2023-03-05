@@ -1,7 +1,9 @@
-use std::sync::Mutex;
-pub mod models;
-pub mod services;
 use models::user::User;
+use std::sync::Mutex;
+
+mod models;
+mod request_guards;
+pub mod services;
 
 pub struct AppState {
     users: Mutex<Vec<User>>,

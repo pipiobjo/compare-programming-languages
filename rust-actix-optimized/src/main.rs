@@ -1,10 +1,10 @@
 use actix_web::{web, App, HttpServer};
 use futures::future;
-use rustactix::services::greeting::get_greeting_message;
-use rustactix::services::probes::{get_liveness, get_readiness, get_startup};
-use rustactix::services::user::{create_user, get_users};
-use rustactix::services::version::get_version;
-use rustactix::AppState;
+use rustactixoptimized::services::greeting::get_greeting_message;
+use rustactixoptimized::services::probes::{get_liveness, get_readiness, get_startup};
+use rustactixoptimized::services::user::{create_user, get_users};
+use rustactixoptimized::services::version::get_version;
+use rustactixoptimized::AppState;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

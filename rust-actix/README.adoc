@@ -1,6 +1,0 @@
-= REST API in Rust with Actix
-
-== Libs
-Rust Book https://doc.rust-lang.org/book/title-page.html
-Actix https://actix.rs/
-

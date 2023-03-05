@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import com.pipiobjo.api.APIHandler;
 import com.pipiobjo.ops.OpsHandler;
@@ -33,7 +34,9 @@ class Application {
 
         OpsHandler opsHandler = new OpsHandler(ctx);
         server.createContext(operatingContextPath, opsHandler::handle);
-        ExecutorService threadPool = Executors.newWorkStealingPool(3);
+
+        ExecutorService threadPool = Executors.newVirtualThreadPerTaskExecutor();
+
         server.setExecutor(threadPool);
         server.start();
         logger.info("{}:{} started",  operating_http_port, operatingContextPath);

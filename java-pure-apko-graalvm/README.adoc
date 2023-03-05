@@ -33,17 +33,18 @@ Lets check the results:
 .Build the image
 [source, bash]
 ----
-./build-and-push-pure-java-openjdk.sh
+./build-and-push-pure-java-graalvm.sh
 ----
 
 [source, bash]
 ----
-dive pure-java-openjdk:latest
+dive localhost:5003/java-pure-apko-graalvm
 
-78 MB  FROM f4e4234198a7e18 (base image)
-52 MB  #(nop) COPY dir:24945eb841051a50c7783352cb8fd98321f8ff8aba26bba40b315fee759ecd77 in /opt/jre-minimal (reduced java vm)
-3.4 MB  #(nop) COPY file:b81b91a7afb222cc418f2ff134032716e92dd96b456aafb981329ba64eb23bc8 in app.jar (java app)
-Total Image size: 134 MB
+5.9 MB  FROM b4fc1b015ed6084
+90 MB  COPY /opt/jre-minimal /opt/jre-minimal
+3.4 MB  COPY /home/app/target/java-pure-apko-graalvm*jar-with-dependencies.jar /app.jar
+
+Total Image size: 100 MB
 ----
 
 
@@ -57,11 +58,3 @@ To build a small base image what prepared for the JDK Wolfi and Apko will be use
 * https://github.com/chainguard-dev/apko
 * https://edu.chainguard.dev/open-source/apko/overview/
 
-
-5.9 MB  FROM 9d3ca574b58dab2 (base image)
-52 MB  COPY /opt/jre-minimal /opt/jre-minimal # buildkit
-3.4 MB  COPY /home/app/target/java-pure-apko-graalvm*jar-with-dependencies.jar /app.jar
-Total Image size: 61 MB
-
-
-Default cgr.dev/chainguard/gcc-musl:latest 149 MB

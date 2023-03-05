@@ -7,9 +7,6 @@ contents:
 #    - ca-certificates-bundle
     - wolfi-baselayout
     - glibc
-#    - glibc-locale-en
-#    - busybox
-#    - bash
     - zlib
 
 accounts:

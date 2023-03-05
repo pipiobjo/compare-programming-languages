@@ -1,0 +1,11 @@
+= Spring Boot native
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html
+
+== Normal vs Native Images
+
+https://www.graalvm.org/22.3/reference-manual/native-image/metadata/Compatibility/
+
+
+https://blog.codecentric.de/spring-boot-graalvm-docker-heroku
+https://github.com/jonashackt/spring-boot-graalvm

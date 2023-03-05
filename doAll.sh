@@ -30,12 +30,15 @@ ${BUILD_SCRIPTS}/java-19-pure-apko-loom-build-deploy.sh
 ${BUILD_SCRIPTS}/java-pure-apko-build-deploy.sh
 ${BUILD_SCRIPTS}/java-pure-apko-graalvm-build-deploy.sh
 ${BUILD_SCRIPTS}/java-pure-build-deploy.sh
+${BUILD_SCRIPTS}/java-springboot-build-deploy.sh
+${BUILD_SCRIPTS}/java-springboot-native-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-actix-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-actix-optimized-build-deploy.sh
-${BUILD_SCRIPTS}/java-springboot-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-rocket-build-deploy.sh
 ${BUILD_SCRIPTS}/python-flask-build-deploy.sh
 ${BUILD_SCRIPTS}/golang-chi-build-deploy.sh
+${BUILD_SCRIPTS}/js-express-build-deploy.sh
+
 
 
 echo -e "${GREEN}execute all load tests${NO_COLOR} "
@@ -45,8 +48,10 @@ ${BUILD_SCRIPTS}/java-pure-apko-load-tests.sh
 ${BUILD_SCRIPTS}/java-pure-apko-graalvm-load-tests.sh
 ${BUILD_SCRIPTS}/java-pure-load-tests.sh
 ${BUILD_SCRIPTS}/java-springboot-load-tests.sh
+${BUILD_SCRIPTS}/java-springboot-native-load-tests.sh
 ${BUILD_SCRIPTS}/rust-actix-load-tests.sh
 ${BUILD_SCRIPTS}/rust-actix-optimized-load-tests.sh
 ${BUILD_SCRIPTS}/rust-rocket-load-tests.sh
 ${BUILD_SCRIPTS}/python-flask-load-tests.sh
 ${BUILD_SCRIPTS}/golang-chi-load-tests.sh
+${BUILD_SCRIPTS}/js-express-load-tests.sh

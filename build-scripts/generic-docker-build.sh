@@ -134,7 +134,11 @@ END=$(date +%s)
 DIFF=$(( $END - $START ))
 
 echo -e "${GREEN}Full docker build took $DIFF seconds ${MY_IMAGE_VERSION_TAG}${NO_COLOR} "
-BUILD_REPORT_FIle="${SCRIPT_DIR}/../report/dist/reports/${REPORT_NAME}/build-duration.json"
+
+BUILD_REPORT_FOLDER="${SCRIPT_DIR}/../report/dist/reports/${REPORT_NAME}"
+mkdir -p "${BUILD_REPORT_FOLDER}"
+BUILD_REPORT_FIle="${BUILD_REPORT_FOLDER}/build-duration.json"
+
 
 echo -e "${GREEN}Writing build report to ${BUILD_REPORT_FIle}${NO_COLOR} "
 echo "{\"buildDuration\": $DIFF}" > $BUILD_REPORT_FIle

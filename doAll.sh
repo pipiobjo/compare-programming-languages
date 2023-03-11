@@ -3,7 +3,7 @@
 CURRENT_DIR=$(pwd)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/"
 
-${SCRIPT_DIR}/cleanup.sh
+#${SCRIPT_DIR}/cleanup.sh
 
 BUILD_SCRIPTS="${SCRIPT_DIR}/build-scripts"
 K8S_PLAYGROUND_DIR="${SCRIPT_DIR}/../../k8s-playground/"
@@ -20,7 +20,6 @@ kubectl config use-context "kind-${KIND_CLUSTER_NAME}"
 echo -e "${GREEN}setup infra${NO_COLOR} "
 
 
-${BUILD_SCRIPTS}/../initInfra.sh
 
 echo -e "${GREEN}build all service${NO_COLOR} "
 
@@ -37,7 +36,8 @@ ${BUILD_SCRIPTS}/rust-actix-optimized-build-deploy.sh
 ${BUILD_SCRIPTS}/rust-rocket-build-deploy.sh
 ${BUILD_SCRIPTS}/python-flask-build-deploy.sh
 ${BUILD_SCRIPTS}/golang-chi-build-deploy.sh
-${BUILD_SCRIPTS}/js-express-build-deploy.sh
+
+#${BUILD_SCRIPTS}/js-express-build-deploy.sh
 
 
 
@@ -54,4 +54,4 @@ ${BUILD_SCRIPTS}/rust-actix-optimized-load-tests.sh
 ${BUILD_SCRIPTS}/rust-rocket-load-tests.sh
 ${BUILD_SCRIPTS}/python-flask-load-tests.sh
 ${BUILD_SCRIPTS}/golang-chi-load-tests.sh
-${BUILD_SCRIPTS}/js-express-load-tests.sh
+#${BUILD_SCRIPTS}/js-express-load-tests.sh

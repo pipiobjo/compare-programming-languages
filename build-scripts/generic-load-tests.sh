@@ -41,6 +41,14 @@ DOCKER_IMAGE_SIZE_JSON="${REPORT_FOLDER}/container-image-size.json"
 CPU_PERF_DATA_JSON="${REPORT_FOLDER}/perf-cpu.json"
 MEM_PERF_DATA_JSON="${REPORT_FOLDER}/perf-mem.json"
 
+# start collecting metrics
+${SCRIPT_DIR}/collect-usage-data.sh \
+  --mode "start" \
+  --serviceName "${MICROSERVICE_NAME}" \
+  --reportFolder "${REPORT_FOLDER}" &
+
+COLLECT_USAGE_DATA_PID=$!
+echo "COLLECT_USAGE_DATA_PID: ${COLLECT_USAGE_DATA_PID}"
 
 echo "starting loadtests for ${REST_CONTEXT_PATH} writing report to ${REPORT_FILE}"
 k6 run \
@@ -48,6 +56,28 @@ k6 run \
   -e REPORT_FILE="${REPORT_FILE}" \
   -e REPORT_FILE_JSON="${REPORT_FILE_JSON}" \
   ${SCRIPT_DIR}../k6-load-testing/script.js
+sleep 3s
+
+
+# stop collecting metrics
+#kill $COLLECT_USAGE_DATA_PID
+#rm "${REPORT_FOLDER}/execute-loop.txt"
+
+
+#
+${SCRIPT_DIR}/collect-usage-data.sh \
+  --mode "stop" \
+  --serviceName "${MICROSERVICE_NAME}" \
+  --reportFolder "${REPORT_FOLDER}"
+
+# kill the collect-usage-data regardless of how this script exits
+trap '{
+    if ps -p $COLLECT_USAGE_DATA_PID > /dev/null
+    then
+       echo killing collect-usage-data: $COLLECT_USAGE_DATA_PID
+       kill $COLLECT_USAGE_DATA_PID
+    fi
+}' EXIT SIGINT SIGTERM
 
 
 # get image size
@@ -63,33 +93,33 @@ echo "DOCKER_IMAGE_SIZE=${DOCKER_IMAGE_SIZE}"
 echo "{\"image-size\": ${DOCKER_IMAGE_SIZE}}" > "${DOCKER_IMAGE_SIZE_JSON}"
 
 
-## get metric values from prometheus
-echo -e "${GREEN}Getting Prometheus Data${NO_COLOR} "
-kubectl port-forward svc/prometheus-server 9090:80 &
-KUBECTL_PID=$!
-echo "KUBECTL_PID: ${KUBECTL_PID}"
-
-sleep 1
-
-# kill the port-forward regardless of how this script exits
-trap '{
-    echo killing kubectl port-forward: $KUBECTL_PID
-    kill $KUBECTL_PID
-}' EXIT
-
-curl "http://localhost:9090/api/v1/status/runtimeinfo" | jq
-echo -e "${GREEN}Curl cpu data: ${MICROSERVICE_NAME}${NO_COLOR} "
-
-# CPU DATA
-#curl -s -g 'http://localhost:9090/api/v1/query?query=container_cpu_user_seconds_total{container="java-pure"}[5m]' | jq -r '.data.result[0].values'
-CPU_QUERY_URL="http://localhost:9090/api/v1/query?query=container_cpu_user_seconds_total{container=\"${MICROSERVICE_NAME}\"}[10m]"
-echo "CPU_QUERY_URL=${CPU_QUERY_URL}"
-CPU_DATA=$(curl -s -g "${CPU_QUERY_URL}")
-echo "$CPU_DATA" > ${CPU_PERF_DATA_JSON}
-
-# MEM DATA
-MEM_QUERY_URL="http://localhost:9090/api/v1/query?query=container_memory_rss{container=\"${MICROSERVICE_NAME}\"}[10m]"
-#curl -s -g 'http://localhost:9090/api/v1/query?query=container_memory_rss{container="${MICROSERVICE_NAME}"}[5m]' | jq -r '.data.result[0].values'
-echo "MEM_QUERY_URL=${MEM_QUERY_URL}"
-MEM_DATA=$(curl -s -g "${MEM_QUERY_URL}")
-echo "$MEM_DATA" > ${MEM_PERF_DATA_JSON}
+### get metric values from prometheus
+#echo -e "${GREEN}Getting Prometheus Data${NO_COLOR} "
+#kubectl port-forward svc/prometheus-server 9090:80 &
+#KUBECTL_PID=$!
+#echo "KUBECTL_PID: ${KUBECTL_PID}"
+#
+#sleep 1
+#
+## kill the port-forward regardless of how this script exits
+#trap '{
+#    echo killing kubectl port-forward: $KUBECTL_PID
+#    kill $KUBECTL_PID
+#}' EXIT
+#
+#curl "http://localhost:9090/api/v1/status/runtimeinfo" | jq
+#echo -e "${GREEN}Curl cpu data: ${MICROSERVICE_NAME}${NO_COLOR} "
+#
+## CPU DATA
+##curl -s -g 'http://localhost:9090/api/v1/query?query=container_cpu_user_seconds_total{container="java-pure"}[5m]' | jq -r '.data.result[0].values'
+#CPU_QUERY_URL="http://localhost:9090/api/v1/query?query=container_cpu_user_seconds_total{container=\"${MICROSERVICE_NAME}\"}[10m]"
+#echo "CPU_QUERY_URL=${CPU_QUERY_URL}"
+#CPU_DATA=$(curl -s -g "${CPU_QUERY_URL}")
+#echo "$CPU_DATA" > ${CPU_PERF_DATA_JSON}
+#
+## MEM DATA
+#MEM_QUERY_URL="http://localhost:9090/api/v1/query?query=container_memory_rss{container=\"${MICROSERVICE_NAME}\"}[10m]"
+##curl -s -g 'http://localhost:9090/api/v1/query?query=container_memory_rss{container="${MICROSERVICE_NAME}"}[5m]' | jq -r '.data.result[0].values'
+#echo "MEM_QUERY_URL=${MEM_QUERY_URL}"
+#MEM_DATA=$(curl -s -g "${MEM_QUERY_URL}")
+#echo "$MEM_DATA" > ${MEM_PERF_DATA_JSON}

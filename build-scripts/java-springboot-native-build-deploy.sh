@@ -36,7 +36,7 @@ docker push -a "${MY_IMAGE}"
 export GENERATED_IMAGE="${MY_IMAGE_VERSION_TAG}"
 
 END=$(date +%s)
-DIFF=$( $END - $START )
+DIFF=$(( $END - $START ))
 echo -e "${GREEN}Full docker build took $DIFF seconds ${MY_IMAGE_VERSION_TAG}${NO_COLOR} "
 
 

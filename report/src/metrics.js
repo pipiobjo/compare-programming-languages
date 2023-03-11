@@ -141,11 +141,11 @@ function prepareLoadTestData(prefix, loadTestResults){
 
 function unifyValues(values){
     const result = [];
-    var min = Math.min(...values.map(item => item[0]));
+    var min = Math.min(...values.map(item => item["timestamp"]));
     values.map(item => {
         result.push({
-            x: item[0] - min,
-            y: item[1],
+            x: item["timestamp"] - min,
+            y: item["cpu-usage"].replace("m",""),
         })
     });
     return result;
@@ -156,11 +156,11 @@ function unifyValues(values){
 
 function unifyValuesMemory(values){
     const result = [];
-    var min = Math.min(...values.map(item => item[0]));
+    var min = Math.min(...values.map(item => item["timestamp"]));
     values.map(item => {
         result.push({
-            x: item[0] - min,
-            y: formatBytes(item[1]),
+            x: item["timestamp"] - min,
+            y: item["memory-usage"].replace("Mi",""),
         })
     });
     return result;
@@ -169,7 +169,7 @@ function unifyValuesMemory(values){
 }
 
 function prepareMemData(prefix, perfData){
-    const values = perfData.data.result[0].values;
+    const values = perfData["memory-data"];
     let unifiedVal = unifyValuesMemory(values);
 
     if(!memDataSet.labels){
@@ -191,7 +191,7 @@ function prepareMemData(prefix, perfData){
 }
 
 function prepareCpuData(prefix, perfData){
-    const values = perfData.data.result[0].values;
+    const values = perfData["cpu-data"];
     let unifiedVal = unifyValues(values);
 
     if(!cpuDataSet.labels){
@@ -272,6 +272,7 @@ async function loadServiceData(prefix, serviceReports) {
     console.log('cpu', perfCPU);
     console.log('mem', perfMem);
     console.log('buildDuration', buildDuration);
+    console.log('startupDuration', startupDuration);
     console.log("--------------------------------------------------------------------------------")
 
     prepareLoadTestData(prefix, loadTestResults);

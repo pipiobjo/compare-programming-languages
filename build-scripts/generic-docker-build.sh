@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
 #set -x
 #set -o errexit # fail on error
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/"

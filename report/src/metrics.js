@@ -499,7 +499,7 @@ var requestDurationChart;
                   },
                   title: {
                       display: true,
-                      text: "Http Request Duration Avg (ms) - log scale"
+                      text: "Http Request Duration - log scale"
                   },
               },
               scales: {
@@ -514,6 +514,7 @@ var requestDurationChart;
                   y: {
                       display: true,
                       type: 'logarithmic',
+                      // type: 'linear',
                       title: {
                           display: true,
                           text: 'Time in ms',
